@@ -155,22 +155,22 @@ if(isset($_SESSION["user_id"])) {
                         mysqli_stmt_close($stmt);
                         $recentTasks = [];
                     } else {
-                        $result = mysqli_stmt_get_result($stmt);
-                        if($result) {
-                            $recentTasks = mysqli_fetch_all($result, MYSQLI_ASSOC);
-                            // Debug logging
-                            error_log("Recent tasks data for program head: " . print_r($recentTasks, true));
-                            // Log specific fields for debugging
-                            foreach ($recentTasks as $task) {
-                                error_log("Task ID: " . $task['id'] . 
-                                         ", Requester ID: " . $task['requester_id'] . 
-                                         ", Requester Name: " . $task['requester_full_name'] . 
-                                         ", Assigned To ID: " . $task['assigned_to'] . 
-                                         ", Assigned To Name: " . $task['assigned_to_full_name']);
-                            }
-                        } else {
-                            $_SESSION['error_message'] = "Error retrieving department tasks: " . mysqli_error($conn);
-                            error_log("SQL Error for program head: " . mysqli_error($conn));
+            $result = mysqli_stmt_get_result($stmt);
+            if($result) {
+                $recentTasks = mysqli_fetch_all($result, MYSQLI_ASSOC);
+                // Debug logging
+                error_log("Recent tasks data for program head: " . print_r($recentTasks, true));
+                // Log specific fields for debugging
+                foreach ($recentTasks as $task) {
+                    error_log("Task ID: " . $task['id'] . 
+                             ", Requester ID: " . $task['requester_id'] . 
+                             ", Requester Name: " . $task['requester_full_name'] . 
+                             ", Assigned To ID: " . $task['assigned_to'] . 
+                             ", Assigned To Name: " . $task['assigned_to_full_name']);
+                }
+            } else {
+                $_SESSION['error_message'] = "Error retrieving department tasks: " . mysqli_error($conn);
+                error_log("SQL Error for program head: " . mysqli_error($conn));
                             $recentTasks = [];
                         }
                     }

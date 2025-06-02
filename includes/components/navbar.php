@@ -69,7 +69,7 @@ if (isset($_SESSION['username'])) {
 
     <!-- Mobile Brand/Title -->
     <a class="navbar-brand d-flex d-lg-none align-items-center mr-auto" href="index.php" style="text-decoration: none;">
-        <img src="tuplogo.png" alt="TUP Visayas Logo" 
+        <img src="assets/images/tuplogo.png" alt="TUP Visayas Logo" 
              style="max-width: 40px; height: auto; margin-right: 10px;">
         <span class="text-gray-800 my-auto">TUP-V PPGS</span>
     </a>

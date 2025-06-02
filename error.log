@@ -1278,3 +1278,118 @@
 
 [29-May-2025 09:09:43 Europe/Berlin] Processing task update - ID: 18, Status: in_progress, Notes: 
 [29-May-2025 09:09:43 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}
+[02-Jun-2025 16:28:09 Europe/Berlin] update_task_status.php - Request data: Array
+(
+    [task_id] => 18
+    [status] => in_progress
+)
+
+[02-Jun-2025 16:28:09 Europe/Berlin] update_task_status.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 3
+    [user_id] => 3
+    [username] => staff
+    [role] => staff
+)
+
+[02-Jun-2025 16:28:09 Europe/Berlin] Processing task update - ID: 18, Status: in_progress, Notes: 
+[02-Jun-2025 16:28:09 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}
+[02-Jun-2025 16:28:15 Europe/Berlin] update_task_status.php - Request data: Array
+(
+    [task_id] => 18
+    [status] => pending_confirmation
+)
+
+[02-Jun-2025 16:28:15 Europe/Berlin] update_task_status.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 3
+    [user_id] => 3
+    [username] => staff
+    [role] => staff
+)
+
+[02-Jun-2025 16:28:15 Europe/Berlin] Processing task update - ID: 18, Status: pending_confirmation, Notes: 
+[02-Jun-2025 16:28:15 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}
+[02-Jun-2025 16:34:37 Europe/Berlin] update_task_status.php - Request data: Array
+(
+    [task_id] => 18
+    [status] => completed
+    [notes] => dasdasd
+)
+
+[02-Jun-2025 16:34:37 Europe/Berlin] update_task_status.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 5
+    [user_id] => 5
+    [username] => programhead
+    [role] => program head
+)
+
+[02-Jun-2025 16:34:37 Europe/Berlin] Processing task update - ID: 18, Status: completed, Notes: dasdasd
+[02-Jun-2025 16:34:37 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function bind_param() on bool in D:\Xampp\htdocs\PPGS\ajax\update_task_status.php:134
+Stack trace:
+#0 {main}
+  thrown in D:\Xampp\htdocs\PPGS\ajax\update_task_status.php on line 134
+[02-Jun-2025 16:34:51 Europe/Berlin] update_task_status.php - Request data: Array
+(
+    [task_id] => 18
+    [status] => completed
+    [notes] => dasdasd
+)
+
+[02-Jun-2025 16:34:51 Europe/Berlin] update_task_status.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 5
+    [user_id] => 5
+    [username] => programhead
+    [role] => program head
+)
+
+[02-Jun-2025 16:34:51 Europe/Berlin] Processing task update - ID: 18, Status: completed, Notes: dasdasd
+[02-Jun-2025 16:34:51 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function bind_param() on bool in D:\Xampp\htdocs\PPGS\ajax\update_task_status.php:134
+Stack trace:
+#0 {main}
+  thrown in D:\Xampp\htdocs\PPGS\ajax\update_task_status.php on line 134
+[02-Jun-2025 16:37:02 Europe/Berlin] update_task_status.php - Request data: Array
+(
+    [task_id] => 18
+    [status] => completed
+    [notes] => asdasd
+)
+
+[02-Jun-2025 16:37:02 Europe/Berlin] update_task_status.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 5
+    [user_id] => 5
+    [username] => programhead
+    [role] => program head
+)
+
+[02-Jun-2025 16:37:02 Europe/Berlin] Processing task update - ID: 18, Status: completed, Notes: asdasd
+[02-Jun-2025 16:37:02 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function bind_param() on bool in D:\Xampp\htdocs\PPGS\ajax\update_task_status.php:143
+Stack trace:
+#0 {main}
+  thrown in D:\Xampp\htdocs\PPGS\ajax\update_task_status.php on line 143
+[02-Jun-2025 16:42:33 Europe/Berlin] update_task_status.php - Request data: Array
+(
+    [task_id] => 18
+    [status] => completed
+    [notes] => dsadsad
+)
+
+[02-Jun-2025 16:42:33 Europe/Berlin] update_task_status.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 5
+    [user_id] => 5
+    [username] => programhead
+    [role] => program head
+)
+
+[02-Jun-2025 16:42:33 Europe/Berlin] Processing task update - ID: 18, Status: completed, Notes: dsadsad
+[02-Jun-2025 16:42:33 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}
