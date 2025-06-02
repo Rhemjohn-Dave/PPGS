@@ -1,0 +1,8 @@
+{
+    "name": "tup-ppgs/task-management",
+    "description": "Task Management System for TUP PPGS",
+    "type": "project",
+    "require": {
+        "tecnickcom/tcpdf": "^6.6"
+    }
+}

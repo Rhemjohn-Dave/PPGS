@@ -1,0 +1,201 @@
+/* Custom styles for TUP PPGS Task Management System */
+
+/* TUP Visayas Branding Colors */
+:root {
+    --tup-red: #C41E3A;  /* Cardinal Red */
+    --tup-red-light: #D42E4A;
+    --tup-red-dark: #A01830;
+    --tup-gray: #4A4A4A;
+    --tup-light-gray: #F8F9FC;
+}
+
+/* Logo Styles */
+.sidebar-brand-icon {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    margin-right: 10px;
+}
+
+.sidebar-brand-icon img {
+    max-width: 40px;
+    height: auto;
+
+}
+
+/* Priority Badge Styles */
+.priority-badge {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+
+.priority-high {
+    background-color: var(--tup-red);
+    color: white;
+}
+
+.priority-medium {
+    background-color: #FFA500;
+    color: white;
+}
+
+.priority-low {
+    background-color: #1cc88a;
+    color: white;
+}
+
+/* Task status colors */
+.status-pending {
+    color: #FFA500;
+}
+
+.status-in_progress {
+    color: #17A2B8;
+}
+
+.status-completed {
+    color: var(--tup-red);
+}
+
+/* Task card styles */
+.task-card {
+    transition: transform 0.2s;
+}
+
+.task-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Comment styles */
+.comment-card {
+    border-left: 4px solid var(--tup-red);
+    margin-bottom: 1rem;
+}
+
+/* Form styles */
+.form-control:focus {
+    border-color: var(--tup-red);
+    box-shadow: 0 0 0 0.2rem rgba(196, 30, 58, 0.25);
+}
+
+/* Button styles */
+.btn-primary {
+    background-color: var(--tup-red);
+    border-color: var(--tup-red);
+}
+
+.btn-primary:hover {
+    background-color: var(--tup-red-dark);
+    border-color: var(--tup-red-dark);
+}
+
+.btn-info {
+    background-color: #17A2B8;
+    border-color: #17A2B8;
+}
+
+.btn-info:hover {
+    background-color: #138496;
+    border-color: #117a8b;
+}
+
+/* Table styles */
+.table th {
+    background-color: var(--tup-light-gray);
+    border-bottom: 2px solid #e3e6f0;
+    color: var(--tup-gray);
+}
+
+/* Card styles */
+.card {
+    border: none;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.card-header {
+    background-color: var(--tup-light-gray);
+    border-bottom: 1px solid #e3e6f0;
+}
+
+/* Sidebar styles */
+.sidebar {
+    background: linear-gradient(180deg, var(--tup-red) 10%, var(--tup-red-dark) 100%);
+}
+
+.sidebar-brand {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 0.5rem;
+}
+
+/* Topbar styles */
+.topbar {
+    background-color: #ffffff;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+/* Footer styles */
+.sticky-footer {
+    background-color: var(--tup-light-gray);
+    border-top: 1px solid #e3e6f0;
+}
+
+/* Card Border Colors */
+.border-left-primary {
+    border-left: 4px solid var(--tup-red) !important;
+}
+
+/* Status Badge Colors */
+.badge-success {
+    background-color: var(--tup-red);
+    color: white;
+}
+
+.badge-warning {
+    background-color: #FFA500;
+    color: white;
+}
+
+.badge-info {
+    background-color: #17A2B8;
+    color: white;
+}
+
+/* Active Nav Item */
+.sidebar .nav-item.active .nav-link {
+    background-color: var(--tup-red-light);
+}
+
+/* Hover Nav Item */
+.sidebar .nav-item .nav-link:hover {
+    background-color: var(--tup-red-light);
+}
+
+/* Table Header */
+.table thead th {
+    background-color: var(--tup-light-gray);
+    border-bottom: 2px solid #e3e6f0;
+    color: var(--tup-gray);
+}
+
+/* Text Colors */
+.text-primary {
+    color: var(--tup-red) !important;
+}
+
+.text-success {
+    color: var(--tup-red) !important;
+}
+
+/* Card Header Text */
+.card-header h6 {
+    color: var(--tup-red);
+} 
