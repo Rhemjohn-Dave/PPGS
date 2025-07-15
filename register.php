@@ -77,7 +77,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
     // Validate department (optional)
-    if (!empty(trim($_POST["department"]))) {
+    if ($role === 'adaa') {
+        $department_id = '';
+    } elseif (!empty(trim($_POST["department"]))) {
         $department_id = trim($_POST["department"]);
     }
     // Check input errors before inserting in database
@@ -152,7 +154,8 @@ include 'includes/components/header.php';
                         </div>
                         <div class="mb-3">
                             <label for="role" class="form-label">Role</label>
-                            <select class="form-control" id="role" name="role" required>
+                            <select class="form-control" id="role" name="role" required
+                                onchange="toggleDepartmentField()">
                                 <option value="">Select Role</option>
                                 <?php foreach ($allowed_roles as $r): ?>
                                     <option value="<?php echo $r; ?>" <?php echo ($role == $r) ? 'selected' : ''; ?>>
@@ -171,6 +174,8 @@ include 'includes/components/header.php';
                                     </option>
                                 <?php endforeach; ?>
                             </select>
+                            <small class="form-text text-muted" id="department-note" style="display:none;">ADAA does not
+                                belong to any department.</small>
                         </div>
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary btn-block">Register</button>
@@ -185,3 +190,21 @@ include 'includes/components/header.php';
     </div>
 </div>
 <?php include 'includes/components/footer_scripts.php'; ?>
+<script>
+    function toggleDepartmentField() {
+        var role = document.getElementById('role').value;
+        var department = document.getElementById('department');
+        var note = document.getElementById('department-note');
+        if (role === 'adaa') {
+            department.value = '';
+            department.disabled = true;
+            note.style.display = 'block';
+        } else {
+            department.disabled = false;
+            note.style.display = 'none';
+        }
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        toggleDepartmentField();
+    });
+</script>
