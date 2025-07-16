@@ -170,7 +170,7 @@ if ($status_filter === 'pending') {
 }
 
 // Always ensure we're filtering out the correct tasks
-$sql = "SELECT tr.*, u.username as requester_name, u.email as requester_email,
+$sql = "SELECT tr.*, u.username as requester_name, u.full_name as requester_full_name, u.email as requester_email,
         d.name as department_name,
         CASE 
             WHEN EXISTS (SELECT 1 FROM tasks t WHERE t.request_id = tr.id) THEN 'assigned'
@@ -186,7 +186,7 @@ $requests_result = mysqli_query($conn, $sql);
 $total_requests = mysqli_num_rows($requests_result);
 
 // Get all staff members for assignment
-$sql = "SELECT id, username FROM users WHERE role = 'staff' ORDER BY username";
+$sql = "SELECT id, username, full_name FROM users WHERE role = 'staff' ORDER BY full_name, username";
 $staff_result = mysqli_query($conn, $sql);
 
 // Set page title
@@ -300,18 +300,7 @@ include 'includes/components/modals.php';
                                                 <tr>
                                                     <td><?php echo htmlspecialchars($request['title']); ?></td>
                                                     <td>
-                                                    <?php
-                                                    // Try various possible field names for requester
-                                                    $requesterName = 'Unknown';
-                                                    if (!empty($request['requester_full_name'])) {
-                                                        $requesterName = $request['requester_full_name'];
-                                                    } elseif (!empty($request['requester_name'])) {
-                                                        $requesterName = $request['requester_name'];
-                                                    } elseif (!empty($request['username'])) {
-                                                        $requesterName = $request['username'];
-                                                    }
-                                                    echo htmlspecialchars($requesterName);
-                                                    ?>
+                                                    <?php echo htmlspecialchars($request['requester_full_name']); ?>
                                                     </td>
                                                     <td><?php echo htmlspecialchars($request['department_name']); ?></td>
                                                     <td>
@@ -437,7 +426,7 @@ include 'includes/components/modals.php';
                                                                                                     }
                                                                                             ?>
                                                                                                 <option value="<?php echo $staff['id']; ?>" <?php echo $task_count >= 5 ? 'disabled' : ''; ?>>
-                                                                                                    <?php echo htmlspecialchars($staff['username']); ?>
+                                                                                                    <?php echo htmlspecialchars($staff['full_name']); ?>
                                                                                                     <?php echo $task_count >= 5 ? ' (Too many tasks)' : ''; ?>
                                                                                                 </option>
                                                                                             <?php endwhile; ?>
