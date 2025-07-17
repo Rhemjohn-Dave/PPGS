@@ -1,13 +1,16 @@
 <?php
-function isLoggedIn() {
+function isLoggedIn()
+{
     return isset($_SESSION['user_id']);
 }
 
-function getUserRole() {
+function getUserRole()
+{
     return $_SESSION['user_role'] ?? null;
 }
 
-function redirectBasedOnRole() {
+function redirectBasedOnRole()
+{
     if (!isLoggedIn()) {
         header('Location: index.php?page=login');
         exit();
@@ -33,10 +36,11 @@ function redirectBasedOnRole() {
     exit();
 }
 
-function checkRoleAccess($requiredRole) {
+function checkRoleAccess($requiredRole)
+{
     if (!isLoggedIn() || getUserRole() !== $requiredRole) {
         header('Location: index.php?page=unauthorized');
         exit();
     }
 }
-?> 
+?>

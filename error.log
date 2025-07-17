@@ -1393,3 +1393,55 @@ Stack trace:
 
 [02-Jun-2025 16:42:33 Europe/Berlin] Processing task update - ID: 18, Status: completed, Notes: dsadsad
 [02-Jun-2025 16:42:33 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}
+[16-Jul-2025 11:04:14 Europe/Berlin] update_task_status.php - Request data: Array
+(
+    [task_id] => 2
+    [status] => in_progress
+)
+
+[16-Jul-2025 11:04:14 Europe/Berlin] update_task_status.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 3
+    [user_id] => 3
+    [username] => staff
+    [role] => staff
+)
+
+[16-Jul-2025 11:04:14 Europe/Berlin] Processing task update - ID: 2, Status: in_progress, Notes: 
+[16-Jul-2025 11:04:14 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}
+[16-Jul-2025 11:04:17 Europe/Berlin] update_task_status.php - Request data: Array
+(
+    [task_id] => 2
+    [status] => pending_confirmation
+)
+
+[16-Jul-2025 11:04:17 Europe/Berlin] update_task_status.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 3
+    [user_id] => 3
+    [username] => staff
+    [role] => staff
+)
+
+[16-Jul-2025 11:04:17 Europe/Berlin] Processing task update - ID: 2, Status: pending_confirmation, Notes: 
+[16-Jul-2025 11:04:17 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}
+[16-Jul-2025 11:04:43 Europe/Berlin] update_task_status.php - Request data: Array
+(
+    [task_id] => 2
+    [status] => completed
+    [notes] => dasdasd
+)
+
+[16-Jul-2025 11:04:43 Europe/Berlin] update_task_status.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 2
+    [user_id] => 2
+    [username] => user
+    [role] => user
+)
+
+[16-Jul-2025 11:04:43 Europe/Berlin] Processing task update - ID: 2, Status: completed, Notes: dasdasd
+[16-Jul-2025 11:04:43 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}

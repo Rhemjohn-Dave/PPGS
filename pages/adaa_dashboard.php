@@ -66,7 +66,8 @@ checkRoleAccess('adaa');
                                             </a>
                                         </div>
                                         <div class="col-md-3">
-                                            <a href="index.php?page=pending_approvals" class="btn btn-primary btn-block">
+                                            <a href="index.php?page=pending_approvals"
+                                                class="btn btn-primary btn-block">
                                                 <i class="zmdi zmdi-check-all"></i> Pending Approvals
                                             </a>
                                         </div>
@@ -198,4 +199,4 @@ checkRoleAccess('adaa');
             </div>
         </div>
     </div>
-</div> 
+</div>

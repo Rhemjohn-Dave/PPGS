@@ -104,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 }
                                 mysqli_stmt_close($adaa_stmt);
                             }
-                            
+
                             if (!empty($adaa_ids)) {
                                 $adaa_message = "Task request from " . $requesterName . " has been " . strtolower($action) . " by " . $_SESSION['username'];
                                 $adaa_link = "task_approvals.php";
@@ -124,7 +124,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 }
                                 mysqli_stmt_close($admin_stmt);
                             }
-                            
+
                             if (!empty($admin_ids)) {
                                 $admin_message = "Task request from " . $requesterName . " has been " . strtolower($action) . " and may need resource allocation";
                                 $admin_link = "task_approvals.php";
@@ -197,7 +197,7 @@ if ($current_user_role == 'program head' && $user_department_id) {
                   WHERE tr.department_id = ? 
                   AND tr.program_head_approval = 'pending' 
                   ORDER BY tr.created_at DESC";
-    
+
     if ($stmt = mysqli_prepare($conn, $fetch_sql)) {
         mysqli_stmt_bind_param($stmt, "i", $user_department_id);
         if (mysqli_stmt_execute($stmt)) {
@@ -225,7 +225,7 @@ if ($current_user_role == 'program head' && $user_department_id) {
                   WHERE tr.program_head_approval = 'approved' 
                   AND tr.adaa_approval = 'pending' 
                   ORDER BY tr.created_at DESC";
-    
+
     if ($stmt = mysqli_prepare($conn, $fetch_sql)) {
         if (mysqli_stmt_execute($stmt)) {
             $result = mysqli_stmt_get_result($stmt);
@@ -265,16 +265,20 @@ include 'includes/components/sidebar.php';
             <!-- Page Heading -->
             <h1 class="h3 mb-4 text-gray-800">Pending Task Approvals</h1>
 
-            <?php if(isset($_SESSION['success_message'])): ?>
+            <?php if (isset($_SESSION['success_message'])): ?>
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <?php echo $_SESSION['success_message'];
+                    unset($_SESSION['success_message']); ?>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
                 </div>
             <?php endif; ?>
-            <?php if(isset($_SESSION['error_message'])): ?>
+            <?php if (isset($_SESSION['error_message'])): ?>
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <?php echo $_SESSION['error_message'];
+                    unset($_SESSION['error_message']); ?>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
                 </div>
             <?php endif; ?>
 
@@ -297,35 +301,43 @@ include 'includes/components/sidebar.php';
                                     <?php foreach ($requests as $request): ?>
                                         <tr>
                                             <td>
-                                            <?php
-                                            // Try various possible field names for requester
-                                            $requesterName = 'Unknown';
-                                            if (!empty($request['requester_full_name'])) {
-                                                $requesterName = $request['requester_full_name'];
-                                            } elseif (!empty($request['requester_username'])) {
-                                                $requesterName = $request['requester_username'];
-                                            } elseif (!empty($request['requester_name'])) {
-                                                $requesterName = $request['requester_name'];
-                                            }
-                                            echo htmlspecialchars($requesterName);
-                                            ?>
+                                                <?php
+                                                // Try various possible field names for requester
+                                                $requesterName = 'Unknown';
+                                                if (!empty($request['requester_full_name'])) {
+                                                    $requesterName = $request['requester_full_name'];
+                                                } elseif (!empty($request['requester_username'])) {
+                                                    $requesterName = $request['requester_username'];
+                                                } elseif (!empty($request['requester_name'])) {
+                                                    $requesterName = $request['requester_name'];
+                                                }
+                                                echo htmlspecialchars($requesterName);
+                                                ?>
                                             </td>
                                             <td><?php echo htmlspecialchars($request['title']); ?></td>
                                             <td><?php echo nl2br(htmlspecialchars($request['reason'])); ?></td>
                                             <td><?php echo date('M d, Y H:i', strtotime($request['created_at'])); ?></td>
                                             <td>
                                                 <form action="task_approvals.php" method="post" style="display: inline-block;">
-                                                    <input type="hidden" name="request_id" value="<?php echo $request['id']; ?>">
-                                                    <button type="submit" name="approve_request" class="btn btn-success btn-sm" title="Approve">
+                                                    <input type="hidden" name="request_id"
+                                                        value="<?php echo $request['id']; ?>">
+                                                    <button type="submit" name="approve_request" class="btn btn-success btn-sm"
+                                                        title="Approve">
                                                         <i class="fas fa-check"></i> Approve
                                                     </button>
                                                 </form>
                                                 <form action="task_approvals.php" method="post" style="display: inline-block;">
-                                                    <input type="hidden" name="request_id" value="<?php echo $request['id']; ?>">
-                                                    <button type="submit" name="reject_request" class="btn btn-danger btn-sm" title="Reject">
+                                                    <input type="hidden" name="request_id"
+                                                        value="<?php echo $request['id']; ?>">
+                                                    <button type="submit" name="reject_request" class="btn btn-danger btn-sm"
+                                                        title="Reject">
                                                         <i class="fas fa-times"></i> Reject
                                                     </button>
                                                 </form>
+                                                <button type="button" class="btn btn-info btn-sm view-task-btn"
+                                                    data-request-id="<?php echo $request['id']; ?>">
+                                                    <i class="fas fa-eye"></i> View
+                                                </button>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -346,13 +358,104 @@ include 'includes/components/sidebar.php';
 </div>
 <!-- End of Content Wrapper -->
 
+<!-- Modal for viewing task details -->
+<div class="modal fade" id="viewTaskModal" tabindex="-1" role="dialog" aria-labelledby="viewTaskModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewTaskModalLabel">Task/Request Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="task-details-content">
+                <div class="text-center"><span class="spinner-border"></span> Loading...</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php include 'includes/components/footer_scripts.php'; ?>
 
 <script>
-$(document).ready(function() {
-    $('#approvalsTable').DataTable();
-});
+    $(document).ready(function () {
+        $('#approvalsTable').DataTable();
+        $('.view-task-btn').on('click', function () {
+            var requestId = $(this).data('request-id');
+            $('#task-details-content').html('<div class="text-center"><span class="spinner-border"></span> Loading...</div>');
+            $('#viewTaskModal').modal('show');
+            // AJAX to fetch request details
+            $.ajax({
+                url: 'ajax/get_request_data.php',
+                method: 'GET',
+                data: { id: requestId },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success && response.request) {
+                        var r = response.request;
+                        function badge(val) {
+                            if (!val) return '-';
+                            var color = 'secondary';
+                            if (val === 'approved') color = 'success';
+                            else if (val === 'pending') color = 'warning';
+                            else if (val === 'rejected') color = 'danger';
+                            return '<span class="badge badge-' + color + '">' + val.charAt(0).toUpperCase() + val.slice(1) + '</span>';
+                        }
+                        function safe(val) { return val ? val : '-'; }
+                        function formatDate(dt) {
+                            if (!dt) return '-';
+                            var d = new Date(dt);
+                            if (isNaN(d)) return dt;
+                            return d.toLocaleString();
+                        }
+                        var html = '';
+                        html += '<h5>General Information</h5>';
+                        html += '<table class="table table-bordered">';
+                        html += '<tr><th>Title</th><td>' + safe(r.title) + '</td></tr>';
+                        html += '<tr><th>Description</th><td>' + (r.description ? r.description : '-') + '</td></tr>';
+                        html += '<tr><th>Reason</th><td>' + safe(r.reason) + '</td></tr>';
+                        html += '<tr><th>Category</th><td>' + safe(r.category) + '</td></tr>';
+                        html += '<tr><th>Requester</th><td>' + (r.requester_full_name || r.requester_username || '-') + '</td></tr>';
+                        html += '<tr><th>Department</th><td>' + safe(r.department_name) + '</td></tr>';
+                        html += '<tr><th>Status</th><td>' + badge(r.status) + '</td></tr>';
+                        html += '<tr><th>Program Head Approval</th><td>' + badge(r.program_head_approval) + '</td></tr>';
+                        html += '<tr><th>ADAA Approval</th><td>' + badge(r.adaa_approval) + '</td></tr>';
+                        html += '<tr><th>Requested At</th><td>' + formatDate(r.created_at) + '</td></tr>';
+                        html += '</table>';
+                        // Show extra fields for printing
+                        if (r.category && r.category.toLowerCase() === 'printing') {
+                            html += '<h5>Printing Details</h5>';
+                            html += '<table class="table table-bordered">';
+                            html += '<tr><th>Number of Copies</th><td>' + safe(r.num_copies) + '</td></tr>';
+                            html += '<tr><th>Paper Size</th><td>' + safe(r.paper_size) + '</td></tr>';
+                            html += '<tr><th>Paper Type</th><td>' + safe(r.paper_type) + '</td></tr>';
+                            html += '</table>';
+                        }
+                        // Show extra fields for repairs
+                        if (r.category && r.category.toLowerCase() === 'repairs') {
+                            html += '<h5>Repair Details</h5>';
+                            html += '<table class="table table-bordered">';
+                            html += '<tr><th>Equipment Name</th><td>' + safe(r.equipment_name) + '</td></tr>';
+                            html += '<tr><th>Problem Description</th><td>' + safe(r.problem_description) + '</td></tr>';
+                            html += '</table>';
+                        }
+                        $('#task-details-content').html(html);
+                    } else {
+                        $('#task-details-content').html('<div class="alert alert-danger">Request details not found.</div>');
+                    }
+                },
+                error: function () {
+                    $('#task-details-content').html('<div class="alert alert-danger">Error loading request details.</div>');
+                }
+            });
+        });
+    });
 </script>
 
 </body>
-</html> 
+
+</html>
