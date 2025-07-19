@@ -133,13 +133,28 @@ try {
         throw new Exception("Error updating task status");
     }
 
-    // Add completion notes if provided
-    if ($notes && ($new_status === 'completed' || $new_status === 'rejected' || $new_status === 'pending')) {
-        $note_type = ($new_status === 'completed') ? 'completion' : 'rejection';
+    // Add completion, rejection, or postponement notes if provided
+    if (
+        ($notes && ($new_status === 'completed' || $new_status === 'rejected' || $new_status === 'pending')) ||
+        ($new_status === 'postponed' && isset($_POST['postponement_reason']) && $_POST['postponement_reason'])
+    ) {
+        if ($new_status === 'completed') {
+            $note_type = 'completion';
+            $note_text = $notes;
+        } elseif ($new_status === 'postponed') {
+            $note_type = 'postponement';
+            $note_text = $_POST['postponement_reason'];
+            if (isset($_POST['other_reason']) && $_POST['postponement_reason'] === 'other' && $_POST['other_reason']) {
+                $note_text .= ': ' . $_POST['other_reason'];
+            }
+        } else {
+            $note_type = 'rejection';
+            $note_text = $notes;
+        }
         $stmt = $conn->prepare("INSERT INTO task_completion_notes (task_id, user_id, notes, note_type, created_at) VALUES (?, ?, ?, ?, NOW())");
-        $stmt->bind_param("iiss", $task_id, $_SESSION['user_id'], $notes, $note_type);
+        $stmt->bind_param("iiss", $task_id, $_SESSION['user_id'], $note_text, $note_type);
         if (!$stmt->execute()) {
-            throw new Exception("Error saving completion/rejection notes");
+            throw new Exception("Error saving completion/rejection/postponement notes");
         }
     }
 

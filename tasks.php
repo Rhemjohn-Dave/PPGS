@@ -367,6 +367,13 @@ include 'includes/components/modals.php';
                                                         <i class="fas fa-check-double"></i>
                                                     </button>
                                                 <?php endif; ?>
+                                                <?php if (isset($user) && is_array($user) && isset($task['requester_id']) && $task['requester_id'] == $_SESSION['user_id'] && $task['status'] === 'postponed'): ?>
+                                                    <button type="button" class="btn btn-sm btn-info"
+                                                        onclick="showFollowUpModal(<?php echo isset($task['id']) ? $task['id'] : $task['task_id']; ?>)"
+                                                        data-toggle="tooltip" title="Send Follow Up">
+                                                        <i class="fas fa-comment-dots"></i> Follow Up
+                                                    </button>
+                                                <?php endif; ?>
                                             </div>
                                         </td>
                                     </tr>
@@ -587,14 +594,43 @@ include 'includes/components/modals.php';
                 <input type="hidden" id="requestor_action_task_id" value="">
                 <div id="rejectionNotesGroup" style="display:none;">
                     <label for="rejectionNotes">Rejection Notes <span class="text-danger">*</span></label>
-                    <textarea class="form-control" id="rejectionNotes" rows="3"
-                        placeholder="Please provide a reason for rejection..."></textarea>
+                    <textarea class="form-control" id="rejectionNotes" rows="3" placeholder="Please provide a reason for rejection..."></textarea>
+                </div>
+                <div id="completionNotesGroup" style="display:none;">
+                    <label for="completionNotes">Completion Comment <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="completionNotes" rows="3" placeholder="Please provide a comment for completion..."></textarea>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-danger" id="rejectTaskBtn">Reject</button>
                 <button type="button" class="btn btn-success" id="confirmTaskBtn">Confirm Completion</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Follow Up Modal -->
+<div class="modal fade" id="followUpModal" tabindex="-1" role="dialog" aria-labelledby="followUpModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="followUpModalLabel">Send Follow Up</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="followup_task_id" value="">
+                <div class="form-group">
+                    <label for="followup_note">Message <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="followup_note" rows="3"
+                        placeholder="Enter your follow-up message..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-info" id="sendFollowUpBtn">Send Follow Up</button>
             </div>
         </div>
     </div>
@@ -907,14 +943,16 @@ include 'includes/components/modals.php';
     function showRequestorActionModal(taskId) {
         $('#requestor_action_task_id').val(taskId);
         $('#rejectionNotes').val('');
+        $('#completionNotes').val('');
         $('#rejectionNotesGroup').hide();
+        $('#completionNotesGroup').hide();
         $('#requestorActionModal').modal('show');
     }
 
-    $('#rejectTaskBtn').off('click').on('click', function () {
-        // Show notes field if not visible, else submit
+    $('#rejectTaskBtn').off('click').on('click', function() {
         if ($('#rejectionNotesGroup').is(':hidden')) {
             $('#rejectionNotesGroup').show();
+            $('#completionNotesGroup').hide();
             $('#rejectionNotes').focus();
             return;
         }
@@ -934,42 +972,89 @@ include 'includes/components/modals.php';
                 notes: notes
             },
             dataType: 'json',
-            success: function (response) {
+            success: function(response) {
                 if (response.success) {
                     toastr.success('Task sent back to staff for further work.');
                     $('#requestorActionModal').modal('hide');
-                    setTimeout(function () { location.reload(); }, 1000);
+                    setTimeout(function() { location.reload(); }, 1000);
                 } else {
                     toastr.error(response.message || 'Failed to update task.');
                 }
             },
-            error: function (xhr, status, error) {
+            error: function(xhr, status, error) {
                 toastr.error('Error updating task: ' + error);
             }
         });
     });
 
-    $('#confirmTaskBtn').off('click').on('click', function () {
+    $('#confirmTaskBtn').off('click').on('click', function() {
+        if ($('#completionNotesGroup').is(':hidden')) {
+            $('#completionNotesGroup').show();
+            $('#rejectionNotesGroup').hide();
+            $('#completionNotes').focus();
+            return;
+        }
         var taskId = $('#requestor_action_task_id').val();
+        var notes = $('#completionNotes').val().trim();
+        if (!notes) {
+            toastr.error('Please provide a comment for completion.');
+            $('#completionNotes').focus();
+            return;
+        }
         $.ajax({
             url: 'ajax/update_task_status.php',
             type: 'POST',
             data: {
                 task_id: taskId,
-                status: 'completed'
+                status: 'completed',
+                notes: notes
             },
             dataType: 'json',
-            success: function (response) {
+            success: function(response) {
                 if (response.success) {
                     toastr.success('Task marked as completed.');
                     $('#requestorActionModal').modal('hide');
-                    setTimeout(function () { location.reload(); }, 1000);
+                    setTimeout(function() { location.reload(); }, 1000);
                 } else {
                     toastr.error(response.message || 'Failed to update task.');
                 }
             },
-            error: function (xhr, status, error) {
+            error: function(xhr, status, error) {
                 toastr.error('Error updating task: ' + error);
+            }
+        });
+    });
+
+    function showFollowUpModal(taskId) {
+        $('#followup_task_id').val(taskId);
+        $('#followup_note').val('');
+        $('#followUpModal').modal('show');
+    }
+
+    $('#sendFollowUpBtn').off('click').on('click', function () {
+        var taskId = $('#followup_task_id').val();
+        var note = $('#followup_note').val().trim();
+        if (!note) {
+            toastr.error('Please enter your follow-up message.');
+            $('#followup_note').focus();
+            return;
+        }
+        $.ajax({
+            url: 'ajax/followup_task.php',
+            type: 'POST',
+            data: { task_id: taskId, note: note },
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
+                    toastr.success('Follow-up sent successfully!');
+                    $('#followUpModal').modal('hide');
+                    setTimeout(function () { location.reload(); }, 1000);
+                } else {
+                    toastr.error(response.message || 'Failed to send follow-up.');
+                }
+            },
+            error: function (xhr, status, error) {
+                toastr.error('Error sending follow-up: ' + error);
             }
         });
     });

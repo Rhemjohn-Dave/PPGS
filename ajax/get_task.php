@@ -193,6 +193,63 @@ if ($stmt = mysqli_prepare($conn, $query)) {
     }
 }
 
+// Get postponement notes timeline
+$postponement_notes = [];
+$query = "SELECT tcn.*, u.full_name 
+          FROM task_completion_notes tcn
+          JOIN users u ON tcn.user_id = u.id
+          WHERE tcn.task_id = ?
+            AND tcn.note_type = 'postponement'
+          ORDER BY tcn.created_at ASC";
+if ($stmt = mysqli_prepare($conn, $query)) {
+    mysqli_stmt_bind_param($stmt, "i", $taskId);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if ($result) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $postponement_notes[] = $row;
+        }
+    }
+}
+
+// Get followup notes timeline
+$followup_notes = [];
+$query = "SELECT tcn.*, u.full_name 
+          FROM task_completion_notes tcn
+          JOIN users u ON tcn.user_id = u.id
+          WHERE tcn.task_id = ?
+            AND tcn.note_type = 'followup'
+          ORDER BY tcn.created_at ASC";
+if ($stmt = mysqli_prepare($conn, $query)) {
+    mysqli_stmt_bind_param($stmt, "i", $taskId);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if ($result) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $followup_notes[] = $row;
+        }
+    }
+}
+
+// Get completion notes timeline
+$completion_notes = [];
+$query = "SELECT tcn.*, u.full_name 
+          FROM task_completion_notes tcn
+          JOIN users u ON tcn.user_id = u.id
+          WHERE tcn.task_id = ?
+            AND tcn.note_type = 'completion'
+          ORDER BY tcn.created_at ASC";
+if ($stmt = mysqli_prepare($conn, $query)) {
+    mysqli_stmt_bind_param($stmt, "i", $taskId);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if ($result) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $completion_notes[] = $row;
+        }
+    }
+}
+
 // Format status for display
 function formatStatus($status)
 {
@@ -352,7 +409,8 @@ function getPriorityBadgeClass($priority)
                                 <div class="list-group-item">
                                     <div class="d-flex w-100 justify-content-between">
                                         <h6 class="mb-1">
-                                            <?php echo htmlspecialchars($comment['full_name'] ?? $comment['username']); ?></h6>
+                                            <?php echo htmlspecialchars($comment['full_name'] ?? $comment['username']); ?>
+                                        </h6>
                                         <small><?php echo date('M d, Y g:i A', strtotime($comment['created_at'])); ?></small>
                                     </div>
                                     <p class="mb-1"><?php echo nl2br(htmlspecialchars($comment['comment'])); ?></p>
@@ -413,6 +471,75 @@ function getPriorityBadgeClass($priority)
                     </div>
                 </div>
             <?php endif; ?>
+            <?php if (!empty($postponement_notes)): ?>
+                <div class="card mb-4">
+                    <div class="card-header bg-secondary text-white">
+                        <h6 class="mb-0">Postponed by Staff (<?php echo count($postponement_notes); ?> times)</h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush">
+                            <?php foreach ($postponement_notes as $note): ?>
+                                <li class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <strong><?php echo htmlspecialchars($note['full_name']); ?></strong>
+                                        <small><?php echo date('M d, Y g:i A', strtotime($note['created_at'])); ?></small>
+                                    </div>
+                                    <div>
+                                        <span class="badge badge-secondary">Postponed</span>
+                                    </div>
+                                    <p class="mb-1 mt-2"><?php echo nl2br(htmlspecialchars($note['notes'])); ?></p>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                </div>
+            <?php endif; ?>
+            <?php if (!empty($followup_notes)): ?>
+                <div class="card mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="mb-0">User Follow-Ups (<?php echo count($followup_notes); ?>)</h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush">
+                            <?php foreach ($followup_notes as $note): ?>
+                                <li class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <strong><?php echo htmlspecialchars($note['full_name']); ?></strong>
+                                        <small><?php echo date('M d, Y g:i A', strtotime($note['created_at'])); ?></small>
+                                    </div>
+                                    <div>
+                                        <span class="badge badge-info">Follow Up</span>
+                                    </div>
+                                    <p class="mb-1 mt-2"><?php echo nl2br(htmlspecialchars($note['notes'])); ?></p>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                </div>
+            <?php endif; ?>
+            <?php if (!empty($completion_notes)): ?>
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h6 class="mb-0">Completion Comments (<?php echo count($completion_notes); ?>)</h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush">
+                            <?php foreach ($completion_notes as $note): ?>
+                                <li class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <strong><?php echo htmlspecialchars($note['full_name']); ?></strong>
+                                        <small><?php echo date('M d, Y g:i A', strtotime($note['created_at'])); ?></small>
+                                    </div>
+                                    <div>
+                                        <span class="badge badge-success">Completion</span>
+                                    </div>
+                                    <p class="mb-1 mt-2"><?php echo nl2br(htmlspecialchars($note['notes'])); ?></p>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
 
         <div class="col-md-4">
@@ -454,20 +581,20 @@ function getPriorityBadgeClass($priority)
                         ?>
                         <p><strong>Department:</strong><br> <?php echo htmlspecialchars($department['name']); ?></p>
 
-                    <?php
+                        <?php
                         // Then try department directly from task
                     elseif (!empty($task['department_name'])):
                         ?>
                         <p><strong>Department:</strong><br> <?php echo htmlspecialchars($task['department_name']); ?></p>
 
-                    <?php
+                        <?php
                         // Then try department from task request
                     elseif ($taskRequest && !empty($taskRequest['department_name'])):
                         ?>
                         <p><strong>Department:</strong><br> <?php echo htmlspecialchars($taskRequest['department_name']); ?>
                         </p>
 
-                    <?php
+                        <?php
                         // If none available, show No Department
                     else:
                         ?>
