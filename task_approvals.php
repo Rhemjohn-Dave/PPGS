@@ -397,52 +397,30 @@ include 'includes/components/sidebar.php';
                 success: function (response) {
                     if (response.success && response.request) {
                         var r = response.request;
+                        // Helper for colored badges
                         function badge(val) {
-                            if (!val) return '-';
-                            var color = 'secondary';
-                            if (val === 'approved') color = 'success';
-                            else if (val === 'pending') color = 'warning';
-                            else if (val === 'rejected') color = 'danger';
-                            return '<span class="badge badge-' + color + '">' + val.charAt(0).toUpperCase() + val.slice(1) + '</span>';
-                        }
-                        function safe(val) { return val ? val : '-'; }
-                        function formatDate(dt) {
-                            if (!dt) return '-';
-                            var d = new Date(dt);
-                            if (isNaN(d)) return dt;
-                            return d.toLocaleString();
+                            var map = {
+                                'approved': 'success',
+                                'pending': 'warning',
+                                'rejected': 'danger'
+                            };
+                            var color = map[val] || 'secondary';
+                            return '<span class="badge badge-' + color + ' text-capitalize">' + val + '</span>';
                         }
                         var html = '';
-                        html += '<h5>General Information</h5>';
-                        html += '<table class="table table-bordered">';
-                        html += '<tr><th>Title</th><td>' + safe(r.title) + '</td></tr>';
-                        html += '<tr><th>Description</th><td>' + (r.description ? r.description : '-') + '</td></tr>';
-                        html += '<tr><th>Reason</th><td>' + safe(r.reason) + '</td></tr>';
-                        html += '<tr><th>Category</th><td>' + safe(r.category) + '</td></tr>';
+                        html += '<h5 class="mb-3"><i class="fas fa-info-circle"></i> General Information</h5>';
+                        html += '<table class="table table-bordered table-striped">';
+                        html += '<tr><th style="width:30%">Title</th><td>' + (r.title || '-') + '</td></tr>';
+                        html += '<tr><th>Description</th><td>' + (r.description || '-') + '</td></tr>';
+                        html += '<tr><th>Reason</th><td>' + (r.reason || '-') + '</td></tr>';
+                        html += '<tr><th>Category</th><td><span class="badge badge-info">' + (r.category || '-') + '</span></td></tr>';
                         html += '<tr><th>Requester</th><td>' + (r.requester_full_name || r.requester_username || '-') + '</td></tr>';
-                        html += '<tr><th>Department</th><td>' + safe(r.department_name) + '</td></tr>';
+                        html += '<tr><th>Department</th><td>' + (r.department_name || '-') + '</td></tr>';
                         html += '<tr><th>Status</th><td>' + badge(r.status) + '</td></tr>';
                         html += '<tr><th>Program Head Approval</th><td>' + badge(r.program_head_approval) + '</td></tr>';
                         html += '<tr><th>ADAA Approval</th><td>' + badge(r.adaa_approval) + '</td></tr>';
-                        html += '<tr><th>Requested At</th><td>' + formatDate(r.created_at) + '</td></tr>';
+                        html += '<tr><th>Requested At</th><td>' + (r.created_at || '-') + '</td></tr>';
                         html += '</table>';
-                        // Show extra fields for printing
-                        if (r.category && r.category.toLowerCase() === 'printing') {
-                            html += '<h5>Printing Details</h5>';
-                            html += '<table class="table table-bordered">';
-                            html += '<tr><th>Number of Copies</th><td>' + safe(r.num_copies) + '</td></tr>';
-                            html += '<tr><th>Paper Size</th><td>' + safe(r.paper_size) + '</td></tr>';
-                            html += '<tr><th>Paper Type</th><td>' + safe(r.paper_type) + '</td></tr>';
-                            html += '</table>';
-                        }
-                        // Show extra fields for repairs
-                        if (r.category && r.category.toLowerCase() === 'repairs') {
-                            html += '<h5>Repair Details</h5>';
-                            html += '<table class="table table-bordered">';
-                            html += '<tr><th>Equipment Name</th><td>' + safe(r.equipment_name) + '</td></tr>';
-                            html += '<tr><th>Problem Description</th><td>' + safe(r.problem_description) + '</td></tr>';
-                            html += '</table>';
-                        }
                         $('#task-details-content').html(html);
                     } else {
                         $('#task-details-content').html('<div class="alert alert-danger">Request details not found.</div>');

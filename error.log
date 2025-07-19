@@ -1445,3 +1445,37 @@ Stack trace:
 
 [16-Jul-2025 11:04:43 Europe/Berlin] Processing task update - ID: 2, Status: completed, Notes: dasdasd
 [16-Jul-2025 11:04:43 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}
+[19-Jul-2025 10:55:29 Europe/Berlin] update_task_status.php - Request data: Array
+(
+    [task_id] => 1
+    [status] => in_progress
+)
+
+[19-Jul-2025 10:55:29 Europe/Berlin] update_task_status.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 3
+    [user_id] => 3
+    [username] => staff
+    [role] => staff
+)
+
+[19-Jul-2025 10:55:29 Europe/Berlin] Processing task update - ID: 1, Status: in_progress, Notes: 
+[19-Jul-2025 10:55:29 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}
+[19-Jul-2025 10:56:07 Europe/Berlin] update_task_status.php - Request data: Array
+(
+    [task_id] => 1
+    [status] => pending_confirmation
+)
+
+[19-Jul-2025 10:56:07 Europe/Berlin] update_task_status.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 3
+    [user_id] => 3
+    [username] => staff
+    [role] => staff
+)
+
+[19-Jul-2025 10:56:07 Europe/Berlin] Processing task update - ID: 1, Status: pending_confirmation, Notes: 
+[19-Jul-2025 10:56:07 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}
