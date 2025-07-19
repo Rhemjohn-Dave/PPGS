@@ -1479,3 +1479,605 @@ Stack trace:
 
 [19-Jul-2025 10:56:07 Europe/Berlin] Processing task update - ID: 1, Status: pending_confirmation, Notes: 
 [19-Jul-2025 10:56:07 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}
+[19-Jul-2025 11:30:23 Europe/Berlin] update_task_status.php - Request data: Array
+(
+    [task_id] => 1
+    [status] => pending
+)
+
+[19-Jul-2025 11:30:23 Europe/Berlin] update_task_status.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 2
+    [user_id] => 2
+    [username] => user
+    [role] => user
+)
+
+[19-Jul-2025 11:30:23 Europe/Berlin] Processing task update - ID: 1, Status: pending, Notes: 
+[19-Jul-2025 11:30:23 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}
+[19-Jul-2025 11:30:34 Europe/Berlin] update_task.php - Request data: Array
+(
+    [action] => update
+    [id] => 1
+    [status] => pending_confirmation
+    [postponement_reason] => 
+    [other_reason] => 
+)
+
+[19-Jul-2025 11:30:34 Europe/Berlin] update_task.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 3
+    [user_id] => 3
+    [username] => staff
+    [role] => staff
+)
+
+[19-Jul-2025 11:30:34 Europe/Berlin] Update Task Debug - User ID: 3
+[19-Jul-2025 11:30:34 Europe/Berlin] Update Task Debug - User Role: staff
+[19-Jul-2025 11:30:34 Europe/Berlin] Task found with new schema: Array
+(
+    [id] => 1
+    [request_id] => 3
+    [assigned_to] => 3
+    [status] => pending
+    [postponement_reasons] => 
+    [priority] => medium
+    [due_date] => 2025-07-16
+    [completed_at] => 
+    [created_at] => 2025-07-16 16:22:27
+    [updated_at] => 2025-07-19 17:30:23
+    [title] => test
+    [description] => 
+    [department_name] => ECE
+    [assigned_to_name] => staff
+)
+
+[19-Jul-2025 11:30:34 Europe/Berlin] Update Task Debug - Task Data: Array
+(
+    [id] => 1
+    [request_id] => 3
+    [assigned_to] => 3
+    [status] => pending
+    [postponement_reasons] => 
+    [priority] => medium
+    [due_date] => 2025-07-16
+    [completed_at] => 
+    [created_at] => 2025-07-16 16:22:27
+    [updated_at] => 2025-07-19 17:30:23
+    [title] => test
+    [description] => 
+    [department_name] => ECE
+    [assigned_to_name] => staff
+)
+
+[19-Jul-2025 11:30:34 Europe/Berlin] Update Task Debug - Is Admin: false
+[19-Jul-2025 11:30:34 Europe/Berlin] Update Task Debug - Is Assigned Staff: true
+[19-Jul-2025 11:30:34 Europe/Berlin] Update Task Debug - Task Assigned To: 3
+[19-Jul-2025 11:30:34 Europe/Berlin] Update Task Debug - Session User ID: 3
+[19-Jul-2025 11:30:34 Europe/Berlin] PHP Warning:  Undefined array key "created_by" in D:\xampp1\htdocs\PPGS\ajax\update_task.php on line 166
+[19-Jul-2025 11:30:34 Europe/Berlin] Exception in update_task.php: Cannot add or update a child row: a foreign key constraint fails
+[19-Jul-2025 11:30:34 Europe/Berlin] Sending JSON response: {"success":false,"message":"An error occurred while updating the task"}
+[19-Jul-2025 11:30:40 Europe/Berlin] update_task.php - Request data: Array
+(
+    [action] => update
+    [id] => 1
+    [status] => pending_confirmation
+    [postponement_reason] => 
+    [other_reason] => 
+)
+
+[19-Jul-2025 11:30:40 Europe/Berlin] update_task.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 3
+    [user_id] => 3
+    [username] => staff
+    [role] => staff
+)
+
+[19-Jul-2025 11:30:40 Europe/Berlin] Update Task Debug - User ID: 3
+[19-Jul-2025 11:30:40 Europe/Berlin] Update Task Debug - User Role: staff
+[19-Jul-2025 11:30:40 Europe/Berlin] Task found with new schema: Array
+(
+    [id] => 1
+    [request_id] => 3
+    [assigned_to] => 3
+    [status] => pending_confirmation
+    [postponement_reasons] => 
+    [priority] => medium
+    [due_date] => 2025-07-16
+    [completed_at] => 
+    [created_at] => 2025-07-16 16:22:27
+    [updated_at] => 2025-07-19 17:30:34
+    [title] => test
+    [description] => 
+    [department_name] => ECE
+    [assigned_to_name] => staff
+)
+
+[19-Jul-2025 11:30:40 Europe/Berlin] Update Task Debug - Task Data: Array
+(
+    [id] => 1
+    [request_id] => 3
+    [assigned_to] => 3
+    [status] => pending_confirmation
+    [postponement_reasons] => 
+    [priority] => medium
+    [due_date] => 2025-07-16
+    [completed_at] => 
+    [created_at] => 2025-07-16 16:22:27
+    [updated_at] => 2025-07-19 17:30:34
+    [title] => test
+    [description] => 
+    [department_name] => ECE
+    [assigned_to_name] => staff
+)
+
+[19-Jul-2025 11:30:40 Europe/Berlin] Update Task Debug - Is Admin: false
+[19-Jul-2025 11:30:40 Europe/Berlin] Update Task Debug - Is Assigned Staff: true
+[19-Jul-2025 11:30:40 Europe/Berlin] Update Task Debug - Task Assigned To: 3
+[19-Jul-2025 11:30:40 Europe/Berlin] Update Task Debug - Session User ID: 3
+[19-Jul-2025 11:30:40 Europe/Berlin] PHP Warning:  Undefined array key "created_by" in D:\xampp1\htdocs\PPGS\ajax\update_task.php on line 166
+[19-Jul-2025 11:30:40 Europe/Berlin] Exception in update_task.php: Cannot add or update a child row: a foreign key constraint fails
+[19-Jul-2025 11:30:40 Europe/Berlin] Sending JSON response: {"success":false,"message":"An error occurred while updating the task"}
+[19-Jul-2025 11:30:52 Europe/Berlin] update_task.php - Request data: Array
+(
+    [action] => update
+    [id] => 1
+    [status] => pending_confirmation
+    [postponement_reason] => 
+    [other_reason] => 
+)
+
+[19-Jul-2025 11:30:52 Europe/Berlin] update_task.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 3
+    [user_id] => 3
+    [username] => staff
+    [role] => staff
+)
+
+[19-Jul-2025 11:30:52 Europe/Berlin] Update Task Debug - User ID: 3
+[19-Jul-2025 11:30:52 Europe/Berlin] Update Task Debug - User Role: staff
+[19-Jul-2025 11:30:52 Europe/Berlin] Task found with new schema: Array
+(
+    [id] => 1
+    [request_id] => 3
+    [assigned_to] => 3
+    [status] => pending_confirmation
+    [postponement_reasons] => 
+    [priority] => medium
+    [due_date] => 2025-07-16
+    [completed_at] => 
+    [created_at] => 2025-07-16 16:22:27
+    [updated_at] => 2025-07-19 17:30:40
+    [title] => test
+    [description] => 
+    [department_name] => ECE
+    [assigned_to_name] => staff
+)
+
+[19-Jul-2025 11:30:52 Europe/Berlin] Update Task Debug - Task Data: Array
+(
+    [id] => 1
+    [request_id] => 3
+    [assigned_to] => 3
+    [status] => pending_confirmation
+    [postponement_reasons] => 
+    [priority] => medium
+    [due_date] => 2025-07-16
+    [completed_at] => 
+    [created_at] => 2025-07-16 16:22:27
+    [updated_at] => 2025-07-19 17:30:40
+    [title] => test
+    [description] => 
+    [department_name] => ECE
+    [assigned_to_name] => staff
+)
+
+[19-Jul-2025 11:30:52 Europe/Berlin] Update Task Debug - Is Admin: false
+[19-Jul-2025 11:30:52 Europe/Berlin] Update Task Debug - Is Assigned Staff: true
+[19-Jul-2025 11:30:52 Europe/Berlin] Update Task Debug - Task Assigned To: 3
+[19-Jul-2025 11:30:52 Europe/Berlin] Update Task Debug - Session User ID: 3
+[19-Jul-2025 11:30:52 Europe/Berlin] PHP Warning:  Undefined array key "created_by" in D:\xampp1\htdocs\PPGS\ajax\update_task.php on line 166
+[19-Jul-2025 11:30:52 Europe/Berlin] Exception in update_task.php: Cannot add or update a child row: a foreign key constraint fails
+[19-Jul-2025 11:30:52 Europe/Berlin] Sending JSON response: {"success":false,"message":"An error occurred while updating the task"}
+[19-Jul-2025 11:30:55 Europe/Berlin] update_task.php - Request data: Array
+(
+    [action] => update
+    [id] => 1
+    [status] => in_progress
+    [postponement_reason] => 
+    [other_reason] => 
+)
+
+[19-Jul-2025 11:30:55 Europe/Berlin] update_task.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 3
+    [user_id] => 3
+    [username] => staff
+    [role] => staff
+)
+
+[19-Jul-2025 11:30:55 Europe/Berlin] Update Task Debug - User ID: 3
+[19-Jul-2025 11:30:55 Europe/Berlin] Update Task Debug - User Role: staff
+[19-Jul-2025 11:30:55 Europe/Berlin] Task found with new schema: Array
+(
+    [id] => 1
+    [request_id] => 3
+    [assigned_to] => 3
+    [status] => pending_confirmation
+    [postponement_reasons] => 
+    [priority] => medium
+    [due_date] => 2025-07-16
+    [completed_at] => 
+    [created_at] => 2025-07-16 16:22:27
+    [updated_at] => 2025-07-19 17:30:52
+    [title] => test
+    [description] => 
+    [department_name] => ECE
+    [assigned_to_name] => staff
+)
+
+[19-Jul-2025 11:30:55 Europe/Berlin] Update Task Debug - Task Data: Array
+(
+    [id] => 1
+    [request_id] => 3
+    [assigned_to] => 3
+    [status] => pending_confirmation
+    [postponement_reasons] => 
+    [priority] => medium
+    [due_date] => 2025-07-16
+    [completed_at] => 
+    [created_at] => 2025-07-16 16:22:27
+    [updated_at] => 2025-07-19 17:30:52
+    [title] => test
+    [description] => 
+    [department_name] => ECE
+    [assigned_to_name] => staff
+)
+
+[19-Jul-2025 11:30:55 Europe/Berlin] Update Task Debug - Is Admin: false
+[19-Jul-2025 11:30:55 Europe/Berlin] Update Task Debug - Is Assigned Staff: true
+[19-Jul-2025 11:30:55 Europe/Berlin] Update Task Debug - Task Assigned To: 3
+[19-Jul-2025 11:30:55 Europe/Berlin] Update Task Debug - Session User ID: 3
+[19-Jul-2025 11:30:55 Europe/Berlin] PHP Warning:  Undefined array key "created_by" in D:\xampp1\htdocs\PPGS\ajax\update_task.php on line 166
+[19-Jul-2025 11:30:55 Europe/Berlin] Exception in update_task.php: Cannot add or update a child row: a foreign key constraint fails
+[19-Jul-2025 11:30:55 Europe/Berlin] Sending JSON response: {"success":false,"message":"An error occurred while updating the task"}
+[19-Jul-2025 11:32:07 Europe/Berlin] update_task.php - Request data: Array
+(
+    [action] => update
+    [id] => 1
+    [status] => in_progress
+    [postponement_reason] => 
+    [other_reason] => 
+)
+
+[19-Jul-2025 11:32:07 Europe/Berlin] update_task.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 3
+    [user_id] => 3
+    [username] => staff
+    [role] => staff
+)
+
+[19-Jul-2025 11:32:07 Europe/Berlin] Update Task Debug - User ID: 3
+[19-Jul-2025 11:32:07 Europe/Berlin] Update Task Debug - User Role: staff
+[19-Jul-2025 11:32:07 Europe/Berlin] Task found with new schema: Array
+(
+    [id] => 1
+    [request_id] => 3
+    [assigned_to] => 3
+    [status] => in_progress
+    [postponement_reasons] => 
+    [priority] => medium
+    [due_date] => 2025-07-16
+    [completed_at] => 
+    [created_at] => 2025-07-16 16:22:27
+    [updated_at] => 2025-07-19 17:30:55
+    [title] => test
+    [description] => 
+    [department_name] => ECE
+    [assigned_to_name] => staff
+)
+
+[19-Jul-2025 11:32:07 Europe/Berlin] Update Task Debug - Task Data: Array
+(
+    [id] => 1
+    [request_id] => 3
+    [assigned_to] => 3
+    [status] => in_progress
+    [postponement_reasons] => 
+    [priority] => medium
+    [due_date] => 2025-07-16
+    [completed_at] => 
+    [created_at] => 2025-07-16 16:22:27
+    [updated_at] => 2025-07-19 17:30:55
+    [title] => test
+    [description] => 
+    [department_name] => ECE
+    [assigned_to_name] => staff
+)
+
+[19-Jul-2025 11:32:07 Europe/Berlin] Update Task Debug - Is Admin: false
+[19-Jul-2025 11:32:07 Europe/Berlin] Update Task Debug - Is Assigned Staff: true
+[19-Jul-2025 11:32:07 Europe/Berlin] Update Task Debug - Task Assigned To: 3
+[19-Jul-2025 11:32:07 Europe/Berlin] Update Task Debug - Session User ID: 3
+[19-Jul-2025 11:32:07 Europe/Berlin] PHP Warning:  Undefined array key "created_by" in D:\xampp1\htdocs\PPGS\ajax\update_task.php on line 166
+[19-Jul-2025 11:32:07 Europe/Berlin] Exception in update_task.php: Cannot add or update a child row: a foreign key constraint fails
+[19-Jul-2025 11:32:07 Europe/Berlin] Sending JSON response: {"success":false,"message":"An error occurred while updating the task"}
+[19-Jul-2025 11:33:20 Europe/Berlin] update_task_status.php - Request data: Array
+(
+    [task_id] => 1
+    [status] => pending_confirmation
+)
+
+[19-Jul-2025 11:33:20 Europe/Berlin] update_task_status.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 3
+    [user_id] => 3
+    [username] => staff
+    [role] => staff
+)
+
+[19-Jul-2025 11:33:20 Europe/Berlin] Processing task update - ID: 1, Status: pending_confirmation, Notes: 
+[19-Jul-2025 11:33:20 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}
+[19-Jul-2025 11:33:41 Europe/Berlin] update_task_status.php - Request data: Array
+(
+    [task_id] => 1
+    [status] => pending
+    [notes] => fsdd
+)
+
+[19-Jul-2025 11:33:41 Europe/Berlin] update_task_status.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 2
+    [user_id] => 2
+    [username] => user
+    [role] => user
+)
+
+[19-Jul-2025 11:33:41 Europe/Berlin] Processing task update - ID: 1, Status: pending, Notes: fsdd
+[19-Jul-2025 11:33:41 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}
+[19-Jul-2025 11:34:47 Europe/Berlin] update_task.php - Request data: Array
+(
+    [action] => update
+    [id] => 1
+    [status] => in_progress
+    [postponement_reason] => 
+    [other_reason] => 
+)
+
+[19-Jul-2025 11:34:47 Europe/Berlin] update_task.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 3
+    [user_id] => 3
+    [username] => staff
+    [role] => staff
+)
+
+[19-Jul-2025 11:34:47 Europe/Berlin] Update Task Debug - User ID: 3
+[19-Jul-2025 11:34:47 Europe/Berlin] Update Task Debug - User Role: staff
+[19-Jul-2025 11:34:47 Europe/Berlin] Task found with new schema: Array
+(
+    [id] => 1
+    [request_id] => 3
+    [assigned_to] => 3
+    [status] => pending
+    [postponement_reasons] => 
+    [priority] => medium
+    [due_date] => 2025-07-16
+    [completed_at] => 
+    [created_at] => 2025-07-16 16:22:27
+    [updated_at] => 2025-07-19 17:33:41
+    [title] => test
+    [description] => 
+    [department_name] => ECE
+    [assigned_to_name] => staff
+)
+
+[19-Jul-2025 11:34:47 Europe/Berlin] Update Task Debug - Task Data: Array
+(
+    [id] => 1
+    [request_id] => 3
+    [assigned_to] => 3
+    [status] => pending
+    [postponement_reasons] => 
+    [priority] => medium
+    [due_date] => 2025-07-16
+    [completed_at] => 
+    [created_at] => 2025-07-16 16:22:27
+    [updated_at] => 2025-07-19 17:33:41
+    [title] => test
+    [description] => 
+    [department_name] => ECE
+    [assigned_to_name] => staff
+)
+
+[19-Jul-2025 11:34:47 Europe/Berlin] Update Task Debug - Is Admin: false
+[19-Jul-2025 11:34:47 Europe/Berlin] Update Task Debug - Is Assigned Staff: true
+[19-Jul-2025 11:34:47 Europe/Berlin] Update Task Debug - Task Assigned To: 3
+[19-Jul-2025 11:34:47 Europe/Berlin] Update Task Debug - Session User ID: 3
+[19-Jul-2025 11:34:47 Europe/Berlin] PHP Warning:  Undefined array key "created_by" in D:\xampp1\htdocs\PPGS\ajax\update_task.php on line 166
+[19-Jul-2025 11:34:47 Europe/Berlin] Exception in update_task.php: Cannot add or update a child row: a foreign key constraint fails
+[19-Jul-2025 11:34:47 Europe/Berlin] Sending JSON response: {"success":false,"message":"An error occurred while updating the task"}
+[19-Jul-2025 11:35:06 Europe/Berlin] update_task_status.php - Request data: Array
+(
+    [task_id] => 1
+    [status] => pending_confirmation
+)
+
+[19-Jul-2025 11:35:06 Europe/Berlin] update_task_status.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 3
+    [user_id] => 3
+    [username] => staff
+    [role] => staff
+)
+
+[19-Jul-2025 11:35:06 Europe/Berlin] Processing task update - ID: 1, Status: pending_confirmation, Notes: 
+[19-Jul-2025 11:35:06 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}
+[19-Jul-2025 11:39:21 Europe/Berlin] update_task_status.php - Request data: Array
+(
+    [task_id] => 1
+    [status] => pending
+    [notes] => sd
+)
+
+[19-Jul-2025 11:39:21 Europe/Berlin] update_task_status.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 2
+    [user_id] => 2
+    [username] => user
+    [role] => user
+)
+
+[19-Jul-2025 11:39:21 Europe/Berlin] Processing task update - ID: 1, Status: pending, Notes: sd
+[19-Jul-2025 11:39:21 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}
+[19-Jul-2025 11:46:24 Europe/Berlin] update_task_status.php - Request data: Array
+(
+    [task_id] => 1
+    [status] => in_progress
+)
+
+[19-Jul-2025 11:46:24 Europe/Berlin] update_task_status.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 3
+    [user_id] => 3
+    [username] => staff
+    [role] => staff
+)
+
+[19-Jul-2025 11:46:24 Europe/Berlin] Processing task update - ID: 1, Status: in_progress, Notes: 
+[19-Jul-2025 11:46:24 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}
+[19-Jul-2025 11:46:36 Europe/Berlin] update_task_status.php - Request data: Array
+(
+    [task_id] => 1
+    [status] => pending_confirmation
+)
+
+[19-Jul-2025 11:46:36 Europe/Berlin] update_task_status.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 3
+    [user_id] => 3
+    [username] => staff
+    [role] => staff
+)
+
+[19-Jul-2025 11:46:36 Europe/Berlin] Processing task update - ID: 1, Status: pending_confirmation, Notes: 
+[19-Jul-2025 11:46:36 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}
+[19-Jul-2025 11:46:47 Europe/Berlin] update_task_status.php - Request data: Array
+(
+    [task_id] => 1
+    [status] => completed
+)
+
+[19-Jul-2025 11:46:47 Europe/Berlin] update_task_status.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 2
+    [user_id] => 2
+    [username] => user
+    [role] => user
+)
+
+[19-Jul-2025 11:46:47 Europe/Berlin] Processing task update - ID: 1, Status: completed, Notes: 
+[19-Jul-2025 11:46:47 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}
+[19-Jul-2025 11:49:26 Europe/Berlin] update_task_status.php - Request data: Array
+(
+    [task_id] => 2
+    [status] => in_progress
+)
+
+[19-Jul-2025 11:49:26 Europe/Berlin] update_task_status.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 3
+    [user_id] => 3
+    [username] => staff
+    [role] => staff
+)
+
+[19-Jul-2025 11:49:26 Europe/Berlin] Processing task update - ID: 2, Status: in_progress, Notes: 
+[19-Jul-2025 11:49:26 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}
+[19-Jul-2025 11:49:57 Europe/Berlin] update_task_status.php - Request data: Array
+(
+    [task_id] => 1
+    [status] => in_progress
+)
+
+[19-Jul-2025 11:49:57 Europe/Berlin] update_task_status.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 3
+    [user_id] => 3
+    [username] => staff
+    [role] => staff
+)
+
+[19-Jul-2025 11:49:57 Europe/Berlin] Processing task update - ID: 1, Status: in_progress, Notes: 
+[19-Jul-2025 11:49:57 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}
+[19-Jul-2025 11:50:40 Europe/Berlin] update_task_status.php - Request data: Array
+(
+    [task_id] => 1
+    [status] => pending_confirmation
+)
+
+[19-Jul-2025 11:50:40 Europe/Berlin] update_task_status.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 3
+    [user_id] => 3
+    [username] => staff
+    [role] => staff
+)
+
+[19-Jul-2025 11:50:40 Europe/Berlin] Processing task update - ID: 1, Status: pending_confirmation, Notes: 
+[19-Jul-2025 11:50:40 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}
+[19-Jul-2025 11:50:43 Europe/Berlin] update_task_status.php - Request data: Array
+(
+    [task_id] => 2
+    [status] => pending_confirmation
+)
+
+[19-Jul-2025 11:50:43 Europe/Berlin] update_task_status.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 3
+    [user_id] => 3
+    [username] => staff
+    [role] => staff
+)
+
+[19-Jul-2025 11:50:43 Europe/Berlin] Processing task update - ID: 2, Status: pending_confirmation, Notes: 
+[19-Jul-2025 11:50:43 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}
+[19-Jul-2025 11:50:49 Europe/Berlin] update_task_status.php - Request data: Array
+(
+    [task_id] => 1
+    [status] => pending
+    [notes] => dsdsds
+)
+
+[19-Jul-2025 11:50:49 Europe/Berlin] update_task_status.php - Session data: Array
+(
+    [loggedin] => 1
+    [id] => 2
+    [user_id] => 2
+    [username] => user
+    [role] => user
+)
+
+[19-Jul-2025 11:50:49 Europe/Berlin] Processing task update - ID: 1, Status: pending, Notes: dsdsds
+[19-Jul-2025 11:50:49 Europe/Berlin] Sending JSON response: {"success":true,"message":"Task status updated successfully"}

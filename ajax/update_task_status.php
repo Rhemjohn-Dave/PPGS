@@ -18,16 +18,17 @@ require_once '../includes/helpers/notification_helper.php';
 header('Content-Type: application/json');
 
 // Function to send JSON response and exit
-function sendJsonResponse($success, $message, $debug_info = null) {
+function sendJsonResponse($success, $message, $debug_info = null)
+{
     $response = [
         'success' => $success,
         'message' => $message
     ];
-    
+
     if ($debug_info !== null && $_SESSION['role'] === 'admin') {
         $response['debug'] = $debug_info;
     }
-    
+
     error_log('Sending JSON response: ' . json_encode($response));
     echo json_encode($response);
     exit;
@@ -38,13 +39,13 @@ error_log('update_task_status.php - Request data: ' . print_r($_POST, true));
 error_log('update_task_status.php - Session data: ' . print_r($_SESSION, true));
 
 // Check if user is logged in
-if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     error_log('update_task_status.php - User not logged in');
     sendJsonResponse(false, 'Please login first');
 }
 
 // Check if required parameters are set
-if(!isset($_POST['task_id']) || !isset($_POST['status'])){
+if (!isset($_POST['task_id']) || !isset($_POST['status'])) {
     $debug = [
         'post' => $_POST,
         'session' => $_SESSION,
@@ -67,7 +68,7 @@ error_log("Processing task update - ID: $task_id, Status: $new_status, Notes: $n
 $valid_statuses = [
     'pending' => ['in_progress'],
     'in_progress' => ['pending_confirmation'],
-    'pending_confirmation' => ['completed', 'rejected'],
+    'pending_confirmation' => ['completed', 'rejected', 'pending'],
     'completed' => [],
     'rejected' => []
 ];
@@ -84,7 +85,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 $task = $result->fetch_assoc();
 
-if(!$task){
+if (!$task) {
     sendJsonResponse(false, 'Task not found');
 }
 
@@ -95,25 +96,29 @@ $is_admin = ($_SESSION['role'] === 'admin');
 
 // Validate status transition
 $current_status = $task['status'];
-if(!isset($valid_statuses[$current_status]) || !in_array($new_status, $valid_statuses[$current_status])){
+if (!isset($valid_statuses[$current_status]) || !in_array($new_status, $valid_statuses[$current_status])) {
     sendJsonResponse(false, 'Invalid status transition');
 }
 
 // Check permissions based on status transition
-if($new_status === 'in_progress' && !$is_assigned_staff){
+if ($new_status === 'in_progress' && !$is_assigned_staff) {
     sendJsonResponse(false, 'Only assigned staff can start a task');
 }
 
-if($new_status === 'pending_confirmation' && !$is_assigned_staff){
+if ($new_status === 'pending_confirmation' && !$is_assigned_staff) {
     sendJsonResponse(false, 'Only assigned staff can mark a task as finished');
 }
 
-if($new_status === 'completed' && !($is_requester || $is_admin)){
+if ($new_status === 'completed' && !($is_requester || $is_admin)) {
     sendJsonResponse(false, 'Only requester or admin can confirm task completion');
 }
 
-if($new_status === 'rejected' && !($is_requester || $is_admin)){
+if ($new_status === 'rejected' && !($is_requester || $is_admin)) {
     sendJsonResponse(false, 'Only requester or admin can reject a task');
+}
+
+if ($new_status === 'pending' && !($is_requester || $is_admin)) {
+    sendJsonResponse(false, 'Only requester or admin can send a task back for further work');
 }
 
 // Start transaction
@@ -123,65 +128,71 @@ try {
     // Update task status
     $stmt = $conn->prepare("UPDATE tasks SET status = ?, completed_at = CASE WHEN ? = 'completed' THEN NOW() ELSE completed_at END WHERE id = ?");
     $stmt->bind_param("ssi", $new_status, $new_status, $task_id);
-    
-    if(!$stmt->execute()){
+
+    if (!$stmt->execute()) {
         throw new Exception("Error updating task status");
     }
-    
+
     // Add completion notes if provided
-    if($notes && ($new_status === 'completed' || $new_status === 'rejected')){
-        $stmt = $conn->prepare("INSERT INTO task_completion_notes (task_id, user_id, notes, created_at) VALUES (?, ?, ?, NOW())");
-        $stmt->bind_param("iis", $task_id, $_SESSION['user_id'], $notes);
-        
-        if(!$stmt->execute()){
-            throw new Exception("Error saving completion notes");
+    if ($notes && ($new_status === 'completed' || $new_status === 'rejected' || $new_status === 'pending')) {
+        $note_type = ($new_status === 'completed') ? 'completion' : 'rejection';
+        $stmt = $conn->prepare("INSERT INTO task_completion_notes (task_id, user_id, notes, note_type, created_at) VALUES (?, ?, ?, ?, NOW())");
+        $stmt->bind_param("iiss", $task_id, $_SESSION['user_id'], $notes, $note_type);
+        if (!$stmt->execute()) {
+            throw new Exception("Error saving completion/rejection notes");
         }
     }
-    
+
     // Send notifications based on status change
-    switch($new_status){
+    switch ($new_status) {
         case 'in_progress':
             // Notify requester that task has started
             $message = "Your task '{$task['request_title']}' has been started by {$task['assigned_to_name']}";
             $link = "view_task.php?id=" . $task_id;
             sendNotification($task['requester_id'], $message, $conn, $link);
             break;
-            
+
         case 'pending_confirmation':
             // Notify requester that task is ready for review
             $message = "Your task '{$task['request_title']}' has been marked as finished by {$task['assigned_to_name']}";
             $link = "view_task.php?id=" . $task_id;
             sendNotification($task['requester_id'], $message, $conn, $link);
             break;
-            
+
         case 'completed':
             // Notify staff that their task has been confirmed
             $message = "Your task '{$task['request_title']}' has been confirmed as completed";
-            if($notes){
+            if ($notes) {
                 $message .= " with the following notes: " . $notes;
             }
             $link = "view_task.php?id=" . $task_id;
             sendNotification($task['assigned_to'], $message, $conn, $link);
             break;
-            
+
         case 'rejected':
             // Notify staff that their task has been rejected
             $message = "Your task '{$task['request_title']}' has been rejected";
-            if($notes){
+            if ($notes) {
                 $message .= " with the following notes: " . $notes;
             }
+            $link = "view_task.php?id=" . $task_id;
+            sendNotification($task['assigned_to'], $message, $conn, $link);
+            break;
+        case 'pending':
+            // Notify staff that their task was sent back for further work
+            $message = "Your task '{$task['request_title']}' was sent back by the requestor for further work.";
             $link = "view_task.php?id=" . $task_id;
             sendNotification($task['assigned_to'], $message, $conn, $link);
             break;
     }
-    
+
     // Commit transaction
     $conn->commit();
     sendJsonResponse(true, 'Task status updated successfully');
-    
+
 } catch (Exception $e) {
     // Rollback transaction on error
     $conn->rollback();
     sendJsonResponse(false, $e->getMessage());
 }
-?> 
+?>
