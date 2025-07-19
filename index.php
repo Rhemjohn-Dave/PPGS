@@ -33,6 +33,8 @@ $departments = [];
 if (isset($_SESSION["user_id"])) {
     $user = $userController->getUserById($_SESSION["user_id"]);
 
+    error_log('Dashboard: user id = ' . ($user['id'] ?? 'N/A') . ', role = ' . ($user['role'] ?? 'N/A'));
+
     if ($user) {
         // Get task counts based on user role
         if ($user['role'] === 'admin') {
@@ -45,187 +47,14 @@ if (isset($_SESSION["user_id"])) {
             // ADAA can see all task counts (similar to admin)
             $taskCounts = $taskController->getAllTaskCounts();
         } else {
-            // Get task counts assigned to this regular user - use prepared statement directly for more reliable results
-            $sql = "SELECT 
-                    COUNT(*) as total,
-                    SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed,
-                    SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending,
-                    SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) as in_progress,
-                    SUM(CASE WHEN status = 'pending_confirmation' THEN 1 ELSE 0 END) as pending_confirmation,
-                    SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as rejected
-                FROM tasks 
-                WHERE assigned_to = ?";
-
-            if ($stmt = mysqli_prepare($conn, $sql)) {
-                mysqli_stmt_bind_param($stmt, "i", $_SESSION["user_id"]);
-                mysqli_stmt_execute($stmt);
-                $result = mysqli_stmt_get_result($stmt);
-
-                if ($result && $row = mysqli_fetch_assoc($result)) {
-                    // Force all values to be integers and handle NULL values
-                    $taskCounts['total'] = isset($row['total']) ? (int) $row['total'] : 0;
-                    $taskCounts['completed'] = isset($row['completed']) ? (int) $row['completed'] : 0;
-                    $taskCounts['pending'] = isset($row['pending']) ? (int) $row['pending'] : 0;
-                    $taskCounts['in_progress'] = isset($row['in_progress']) ? (int) $row['in_progress'] : 0;
-                    $taskCounts['pending_confirmation'] = isset($row['pending_confirmation']) ? (int) $row['pending_confirmation'] : 0;
-                    $taskCounts['rejected'] = isset($row['rejected']) ? (int) $row['rejected'] : 0;
-                } else {
-                    $_SESSION['error_message'] = "Error retrieving task counts: " . mysqli_error($conn);
-                }
-            }
+            // Use TaskController method for user task counts
+            $taskCounts = $taskController->getUserTaskCounts($user['id']);
         }
-
-        // Get recent tasks based on user role
-        if ($user['role'] === 'admin' || $user['role'] === 'adaa') {
-            // Admin and ADAA see all recent tasks (limited to 10)
-            $query = "SELECT 
-                        t.*, 
-                        d.name as department_name, 
-                        tr.title as request_title,
-                        tr.requester_id,
-                        tr.program_head_approval,
-                        tr.adaa_approval,
-                        tr.category,
-                        requester.username as requester_username,
-                        requester.full_name as requester_full_name,
-                        assignee.username as assigned_to_username,
-                        assignee.full_name as assigned_to_full_name
-                     FROM tasks t
-                     JOIN task_requests tr ON t.request_id = tr.id
-                     JOIN departments d ON tr.department_id = d.id
-                     LEFT JOIN users requester ON tr.requester_id = requester.id
-                     LEFT JOIN users assignee ON t.assigned_to = assignee.id
-                     ORDER BY t.created_at DESC LIMIT 10";
-
-            error_log("Admin/ADAA SQL Query: " . $query);
-            $result = mysqli_query($conn, $query);
-            if ($result) {
-                $recentTasks = mysqli_fetch_all($result, MYSQLI_ASSOC);
-                // Debug logging
-                error_log("Recent tasks data for admin/adaa: " . print_r($recentTasks, true));
-                // Log specific fields for debugging
-                foreach ($recentTasks as $task) {
-                    error_log("Task ID: " . $task['id'] .
-                        ", Requester ID: " . $task['requester_id'] .
-                        ", Requester Name: " . $task['requester_full_name'] .
-                        ", Assigned To ID: " . $task['assigned_to'] .
-                        ", Assigned To Name: " . $task['assigned_to_full_name']);
-                }
-            } else {
-                $_SESSION['error_message'] = "Error retrieving tasks: " . mysqli_error($conn);
-                error_log("SQL Error: " . mysqli_error($conn));
-            }
-        } else if ($user['role'] === 'program_head' || $user['role'] === 'program head') {
-            // Program head sees tasks for their department
-            $query = "SELECT 
-                        t.*, 
-                        d.name as department_name, 
-                        tr.title as request_title,
-                        tr.requester_id,
-                        tr.program_head_approval,
-                        tr.adaa_approval,
-                        tr.category,
-                        requester.username as requester_username,
-                        requester.full_name as requester_full_name,
-                        assignee.username as assigned_to_username,
-                        assignee.full_name as assigned_to_full_name
-                     FROM tasks t
-                     JOIN task_requests tr ON t.request_id = tr.id
-                     JOIN departments d ON tr.department_id = d.id
-                     LEFT JOIN users requester ON tr.requester_id = requester.id
-                     LEFT JOIN users assignee ON t.assigned_to = assignee.id
-                     WHERE d.id = ?
-                     ORDER BY t.created_at DESC LIMIT 10";
-            error_log("Program Head SQL Query: " . $query);
-            $stmt = mysqli_prepare($conn, $query);
-            if ($stmt === false) {
-                error_log("Failed to prepare statement: " . mysqli_error($conn));
-                $_SESSION['error_message'] = "Error preparing statement: " . mysqli_error($conn);
-                $recentTasks = [];
-            } else {
-                if (!mysqli_stmt_bind_param($stmt, "i", $user['department_id'])) {
-                    error_log("Failed to bind parameters: " . mysqli_stmt_error($stmt));
-                    $_SESSION['error_message'] = "Error binding parameters: " . mysqli_stmt_error($stmt);
-                    mysqli_stmt_close($stmt);
-                    $recentTasks = [];
-                } else {
-                    if (!mysqli_stmt_execute($stmt)) {
-                        error_log("Failed to execute statement: " . mysqli_stmt_error($stmt));
-                        $_SESSION['error_message'] = "Error executing statement: " . mysqli_stmt_error($stmt);
-                        mysqli_stmt_close($stmt);
-                        $recentTasks = [];
-                    } else {
-                        $result = mysqli_stmt_get_result($stmt);
-                        if ($result) {
-                            $recentTasks = mysqli_fetch_all($result, MYSQLI_ASSOC);
-                            // Debug logging
-                            error_log("Recent tasks data for program head: " . print_r($recentTasks, true));
-                            // Log specific fields for debugging
-                            foreach ($recentTasks as $task) {
-                                error_log("Task ID: " . $task['id'] .
-                                    ", Requester ID: " . $task['requester_id'] .
-                                    ", Requester Name: " . $task['requester_full_name'] .
-                                    ", Assigned To ID: " . $task['assigned_to'] .
-                                    ", Assigned To Name: " . $task['assigned_to_full_name']);
-                            }
-                        } else {
-                            $_SESSION['error_message'] = "Error retrieving department tasks: " . mysqli_error($conn);
-                            error_log("SQL Error for program head: " . mysqli_error($conn));
-                            $recentTasks = [];
-                        }
-                    }
-                }
-            }
-        } else {
-            // Regular user sees their assigned tasks and tasks they requested
-            $query = "SELECT 
-                        t.*, 
-                        d.name as department_name, 
-                        tr.title as request_title,
-                        tr.requester_id,
-                        tr.program_head_approval,
-                        tr.adaa_approval,
-                        tr.category,
-                        requester.username as requester_username,
-                        requester.full_name as requester_full_name,
-                        assignee.username as assigned_to_username,
-                        assignee.full_name as assigned_to_full_name
-                     FROM tasks t
-                     JOIN task_requests tr ON t.request_id = tr.id
-                     LEFT JOIN departments d ON tr.department_id = d.id
-                     LEFT JOIN users requester ON tr.requester_id = requester.id
-                     LEFT JOIN users assignee ON t.assigned_to = assignee.id
-                     WHERE t.assigned_to = ? OR tr.requester_id = ?
-                     ORDER BY t.created_at DESC LIMIT 10";
-            error_log("Regular User SQL Query: " . $query);
-            $stmt = mysqli_prepare($conn, $query);
-            mysqli_stmt_bind_param($stmt, "ii", $_SESSION["user_id"], $_SESSION["user_id"]);
-            mysqli_stmt_execute($stmt);
-            $result = mysqli_stmt_get_result($stmt);
-            if ($result) {
-                $recentTasks = mysqli_fetch_all($result, MYSQLI_ASSOC);
-                // Debug logging
-                error_log("Recent tasks data for regular user: " . print_r($recentTasks, true));
-                // Log specific fields for debugging
-                foreach ($recentTasks as $task) {
-                    error_log("Task ID: " . $task['id'] .
-                        ", Requester ID: " . $task['requester_id'] .
-                        ", Requester Name: " . $task['requester_full_name'] .
-                        ", Assigned To ID: " . $task['assigned_to'] .
-                        ", Assigned To Name: " . $task['assigned_to_full_name']);
-                }
-            } else {
-                $_SESSION['error_message'] = "Error retrieving your tasks: " . mysqli_error($conn);
-                error_log("SQL Error for regular user: " . mysqli_error($conn));
-            }
-        }
-
-        // Get all departments for admin, program head and ADAA
-        if ($user['role'] === 'admin' || $user['role'] === 'adaa') {
-            $departments = $departmentController->getAll();
-        } else if ($user['role'] === 'program_head' || $user['role'] === 'program head') {
-            $departments = [$departmentController->getById($user['department_id'])];
-        }
+        error_log('Dashboard: taskCounts = ' . print_r($taskCounts, true));
+        // Add JS debug output for user and taskCounts
+        echo '<script>console.log("Dashboard: user id = ' . addslashes($user['id'] ?? 'N/A') . ', role = ' . addslashes($user['role'] ?? 'N/A') . '");</script>';
+        echo '<script>console.log("Dashboard: taskCounts = ' . addslashes(json_encode($taskCounts)) . '");</script>';
+        echo '<script>console.log("Dashboard: recentTasks = ' . addslashes(json_encode($recentTasks)) . '");</script>';
     }
 }
 
@@ -277,6 +106,19 @@ if (isset($user) && is_array($user)) {
         $rejectedAll = ($result && $row = mysqli_fetch_assoc($result)) ? (int) $row['cnt'] : 0;
     }
 }
+
+// Get recent tasks for dashboard (all roles see the same 10 most recent tasks)
+$query = "SELECT t.*, d.name as department_name, u.username as assigned_to_name, 
+                 u.full_name as assigned_to_full_name, tr.title as request_title,
+                 tr.equipment_name, tr.department_id, t.priority, tr.category
+          FROM tasks t
+          LEFT JOIN task_requests tr ON t.request_id = tr.id
+          LEFT JOIN departments d ON tr.department_id = d.id
+          LEFT JOIN users u ON t.assigned_to = u.id
+          ORDER BY t.created_at DESC
+          LIMIT 10";
+$result = mysqli_query($conn, $query);
+$recentTasks = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
 // Set page title for header
 $page_title = "Dashboard";
