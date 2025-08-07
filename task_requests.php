@@ -57,10 +57,18 @@ if(isset($_POST['assign_task']) && isset($_POST['request_id']) && isset($_POST['
             exit;
         }
         
-        if($request['status'] == 'assigned') {
-            $_SESSION['error_message'] = "This request has already been assigned.";
-            header("location: task_requests.php");
-            exit;
+        // Check if task already exists for this request
+        $task_check_sql = "SELECT id FROM tasks WHERE request_id = ?";
+        if($task_stmt = mysqli_prepare($conn, $task_check_sql)) {
+            mysqli_stmt_bind_param($task_stmt, "i", $request_id);
+            mysqli_stmt_execute($task_stmt);
+            $task_result = mysqli_stmt_get_result($task_stmt);
+            if(mysqli_num_rows($task_result) > 0) {
+                $_SESSION['error_message'] = "This request has already been assigned to a task.";
+                header("location: task_requests.php");
+                exit;
+            }
+            mysqli_stmt_close($task_stmt);
         }
         
         // Check if a task already exists for this request
@@ -107,18 +115,19 @@ if(isset($_POST['assign_task']) && isset($_POST['request_id']) && isset($_POST['
     mysqli_begin_transaction($conn);
     
     try {
-        // Update task request status
-        $sql = "UPDATE task_requests SET status = 'assigned' WHERE id = ?";
+        // Update task request status to approved (since it's being assigned)
+        $sql = "UPDATE task_requests SET status = 'approved' WHERE id = ?";
         if($stmt = mysqli_prepare($conn, $sql)) {
             mysqli_stmt_bind_param($stmt, "i", $request_id);
             mysqli_stmt_execute($stmt);
             mysqli_stmt_close($stmt);
         }
         
-        // Create task
+        // Create task with safe priority value
+        $priority = isset($_POST['priority']) && in_array($_POST['priority'], ['low', 'medium', 'high']) ? $_POST['priority'] : 'medium';
         $sql = "INSERT INTO tasks (request_id, assigned_to, status, priority, due_date) VALUES (?, ?, 'pending', ?, ?)";
         if($stmt = mysqli_prepare($conn, $sql)) {
-            mysqli_stmt_bind_param($stmt, "iiss", $request_id, $staff_id, $_POST['priority'], $due_date);
+            mysqli_stmt_bind_param($stmt, "iiss", $request_id, $staff_id, $priority, $due_date);
             mysqli_stmt_execute($stmt);
             $task_id = mysqli_insert_id($conn);
             mysqli_stmt_close($stmt);
@@ -157,16 +166,16 @@ $status_filter = isset($_GET['status']) ? $_GET['status'] : 'approved';
 // Make sure we're ALWAYS filtering out assigned tasks unless specifically requested
 $status_condition = "";
 if ($status_filter === 'pending') {
-    $status_condition = "WHERE (tr.program_head_approval = 'pending' OR tr.adaa_approval = 'pending') AND tr.status != 'assigned'";
+    $status_condition = "WHERE (tr.program_head_approval = 'pending' OR tr.adaa_approval = 'pending') AND NOT EXISTS (SELECT 1 FROM tasks t WHERE t.request_id = tr.id)";
 } elseif ($status_filter === 'approved') {
-    $status_condition = "WHERE tr.program_head_approval = 'approved' AND tr.adaa_approval = 'approved' AND tr.status != 'assigned'";
+    $status_condition = "WHERE tr.program_head_approval = 'approved' AND tr.adaa_approval = 'approved' AND NOT EXISTS (SELECT 1 FROM tasks t WHERE t.request_id = tr.id)";
 } elseif ($status_filter === 'assigned') {
-    $status_condition = "WHERE tr.status = 'assigned'";
+    $status_condition = "WHERE EXISTS (SELECT 1 FROM tasks t WHERE t.request_id = tr.id)";
 } elseif ($status_filter === 'rejected') {
-    $status_condition = "WHERE (tr.program_head_approval = 'rejected' OR tr.adaa_approval = 'rejected') AND tr.status != 'assigned'";
+    $status_condition = "WHERE (tr.program_head_approval = 'rejected' OR tr.adaa_approval = 'rejected') AND NOT EXISTS (SELECT 1 FROM tasks t WHERE t.request_id = tr.id)";
 } else {
     // Default "all" view should still exclude assigned tasks
-    $status_condition = "WHERE tr.status != 'assigned'";
+    $status_condition = "WHERE NOT EXISTS (SELECT 1 FROM tasks t WHERE t.request_id = tr.id)";
 }
 
 // Always ensure we're filtering out the correct tasks
@@ -370,7 +379,7 @@ include 'includes/components/modals.php';
                                                         </button>
                                                         <?php viewTaskRequestModal($request); ?>
                                                         
-                                                        <?php if($request['effective_status'] != 'assigned' && $request['program_head_approval'] == 'approved' && $request['adaa_approval'] == 'approved'): ?>
+                                                        <?php if((!isset($request['effective_status']) || $request['effective_status'] != 'assigned') && $request['program_head_approval'] == 'approved' && $request['adaa_approval'] == 'approved'): ?>
                                                             <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#assignTaskModal<?php echo $request['id']; ?>">
                                                                 <i class="fas fa-user-plus"></i> Assign
                                                             </button>

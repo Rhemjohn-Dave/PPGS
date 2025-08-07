@@ -90,7 +90,7 @@ try {
         }
         
         // Create task
-        $sql = "INSERT INTO tasks (request_id, assigned_to, status, due_date) VALUES (?, ?, 'pending', ?)";
+        $sql = "INSERT INTO tasks (request_id, assigned_to, status, priority, due_date) VALUES (?, ?, 'pending', 'medium', ?)";
         if($stmt = mysqli_prepare($conn, $sql)) {
             mysqli_stmt_bind_param($stmt, "iis", $request_id, $staff_id, $due_date);
             if(!mysqli_stmt_execute($stmt)) {
