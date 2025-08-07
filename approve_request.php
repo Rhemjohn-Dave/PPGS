@@ -111,7 +111,7 @@ if ($stmt = mysqli_prepare($conn, $sql)) {
             }
 
             // Update overall status if both approvals are complete
-            $update_status_sql = "UPDATE task_requests SET status = 'dean_adaa_approved' WHERE id = ? AND program_head_approval = 'approved' AND adaa_approval = 'approved'";
+            $update_status_sql = "UPDATE task_requests SET status = 'approved' WHERE id = ? AND program_head_approval = 'approved' AND adaa_approval = 'approved'";
             if ($status_stmt = mysqli_prepare($conn, $update_status_sql)) {
                 mysqli_stmt_bind_param($status_stmt, "i", $request_id);
                 mysqli_stmt_execute($status_stmt);

@@ -43,8 +43,16 @@ try {
             throw new Exception("Request not found.");
         }
         
-        if($request['status'] == 'assigned') {
-            throw new Exception("This request has already been assigned.");
+        // Check if task already exists for this request
+        $task_check_sql = "SELECT id FROM tasks WHERE request_id = ?";
+        if($task_stmt = mysqli_prepare($conn, $task_check_sql)) {
+            mysqli_stmt_bind_param($task_stmt, "i", $request_id);
+            mysqli_stmt_execute($task_stmt);
+            $task_result = mysqli_stmt_get_result($task_stmt);
+            if(mysqli_num_rows($task_result) > 0) {
+                throw new Exception("This request has already been assigned to a task.");
+            }
+            mysqli_stmt_close($task_stmt);
         }
         
         if($request['program_head_approval'] != 'approved' || $request['adaa_approval'] != 'approved') {
@@ -71,8 +79,8 @@ try {
     mysqli_begin_transaction($conn);
     
     try {
-        // Update task request status
-        $sql = "UPDATE task_requests SET status = 'assigned' WHERE id = ?";
+        // Update task request status to approved (since it's being assigned)
+        $sql = "UPDATE task_requests SET status = 'approved' WHERE id = ?";
         if($stmt = mysqli_prepare($conn, $sql)) {
             mysqli_stmt_bind_param($stmt, "i", $request_id);
             if(!mysqli_stmt_execute($stmt)) {

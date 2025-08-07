@@ -30,8 +30,10 @@ error_log("Department ID: " . $department_id);
 $departments = $departmentController->getAll();
 
 // Check if user is logged in and has appropriate role
-if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || 
-   !in_array($_SESSION["role"], ["user", "program head", "adaa"])){
+if (
+    !isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true ||
+    !in_array($_SESSION["role"], ["user", "program head", "adaa"])
+) {
     header("location: index.php");
     exit;
 }
@@ -45,45 +47,45 @@ $user_department = null;
 $dept_sql = "SELECT d.id, d.name FROM departments d 
              INNER JOIN users u ON u.department_id = d.id 
              WHERE u.id = ?";
-if($dept_stmt = mysqli_prepare($conn, $dept_sql)){
+if ($dept_stmt = mysqli_prepare($conn, $dept_sql)) {
     mysqli_stmt_bind_param($dept_stmt, "i", $_SESSION["user_id"]);
     mysqli_stmt_execute($dept_stmt);
     $dept_result = mysqli_stmt_get_result($dept_stmt);
-    if($dept_row = mysqli_fetch_assoc($dept_result)){
+    if ($dept_row = mysqli_fetch_assoc($dept_result)) {
         $user_department = $dept_row['id'];
     }
     mysqli_stmt_close($dept_stmt);
 }
 
-if($_SERVER["REQUEST_METHOD"] == "POST"){
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Validate title
-    if(empty(trim($_POST["title"]))){
+    if (empty(trim($_POST["title"]))) {
         $title_err = "Please enter a title.";
-    } else{
+    } else {
         $title = trim($_POST["title"]);
     }
-    
+
     // Validate category
-    if(empty(trim($_POST["category"]))){
+    if (empty(trim($_POST["category"]))) {
         $category_err = "Please select a category.";
-    } else{
+    } else {
         $category = trim($_POST["category"]);
     }
 
     // Validate reason
-    if(empty(trim($_POST["reason"]))){
+    if (empty(trim($_POST["reason"]))) {
         $reason_err = "Please enter a reason.";
-    } else{
+    } else {
         $reason = trim($_POST["reason"]);
     }
 
     // Validate attachment for printing category
-    if($category === 'printing' && (!isset($_FILES['attachment']) || $_FILES['attachment']['size'] === 0)) {
+    if ($category === 'printing' && (!isset($_FILES['attachment']) || $_FILES['attachment']['size'] === 0)) {
         $attachment_err = "Please attach a file for printing request.";
     }
-    
+
     // Check input errors before inserting in database
-    if(empty($title_err) && empty($category_err) && empty($reason_err) && empty($attachment_err)){
+    if (empty($title_err) && empty($category_err) && empty($reason_err) && empty($attachment_err)) {
         try {
             // Validate session variables
             if (!isset($_SESSION["user_id"])) {
@@ -98,15 +100,17 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             // Prepare an insert statement
             $sql = "INSERT INTO task_requests (requester_id, department_id, title, reason, category, num_copies, paper_size, paper_type, equipment_name, problem_description, due_date, status, program_head_approval, adaa_approval, created_at) 
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', 'pending', 'pending', NOW())";
-             
-            if($stmt = mysqli_prepare($conn, $sql)){
+
+            if ($stmt = mysqli_prepare($conn, $sql)) {
                 // Bind variables to the prepared statement as parameters
-                mysqli_stmt_bind_param($stmt, "iisssssssss", 
-                    $param_requester_id, 
-                    $param_department_id, 
-                    $param_title, 
+                mysqli_stmt_bind_param(
+                    $stmt,
+                    "iisssssssss",
+                    $param_requester_id,
+                    $param_department_id,
+                    $param_title,
                     $param_reason,
-                    $param_category, 
+                    $param_category,
                     $param_num_copies,
                     $param_paper_size,
                     $param_paper_type,
@@ -114,14 +118,14 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     $param_problem_description,
                     $param_due_date
                 );
-                
+
                 // Set parameters
                 $param_requester_id = $_SESSION["user_id"];
                 $param_department_id = $user_department;
                 $param_title = $title;
                 $param_reason = $reason;
                 $param_category = $category;
-                
+
                 // Set category-specific parameters, default to NULL if not provided
                 $param_num_copies = $_POST['num_copies'] ?? null;
                 $param_paper_size = $_POST['paper_size'] ?? null;
@@ -130,57 +134,57 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 $param_problem_description = $_POST['problem_description'] ?? null;
 
                 $param_due_date = $_POST['due_date'];
-                
+
                 // Execute the statement
-                if(mysqli_stmt_execute($stmt)){
+                if (mysqli_stmt_execute($stmt)) {
                     // Get the ID of the inserted request
                     $request_id = mysqli_insert_id($conn);
-                    
+
                     // Log successful submission
                     error_log("Task request submitted successfully. Request ID: " . $request_id);
-                    
+
                     // Send notifications to program heads for the department
                     $dept_head_sql = "SELECT id FROM users WHERE role = 'program head' AND department_id = ?";
-                    if($dept_head_stmt = mysqli_prepare($conn, $dept_head_sql)){
+                    if ($dept_head_stmt = mysqli_prepare($conn, $dept_head_sql)) {
                         mysqli_stmt_bind_param($dept_head_stmt, "i", $user_department);
                         mysqli_stmt_execute($dept_head_stmt);
                         $dept_head_result = mysqli_stmt_get_result($dept_head_stmt);
-                        
+
                         $program_heads = [];
-                        while($head_row = mysqli_fetch_assoc($dept_head_result)) {
+                        while ($head_row = mysqli_fetch_assoc($dept_head_result)) {
                             $program_heads[] = $head_row['id'];
                         }
-                        
-                        if(!empty($program_heads)) {
+
+                        if (!empty($program_heads)) {
                             // Include user name in the notification
                             $user_name = $_SESSION["username"] ?? "A user";
                             $message = "New task request: \"" . $title . "\" submitted by " . $user_name . ".";
                             $link = "task_approvals.php";
                             $notificationController->sendNotification($program_heads, $message, $link);
-                            
+
                             // Log notification attempt
                             error_log("Notification sent to program heads: " . implode(',', $program_heads));
                         } else {
                             // Try with exact role name 'program_head' (with underscore)
                             mysqli_stmt_close($dept_head_stmt);
                             $dept_head_sql = "SELECT id FROM users WHERE role = 'program_head' AND department_id = ?";
-                            if($dept_head_stmt = mysqli_prepare($conn, $dept_head_sql)){
+                            if ($dept_head_stmt = mysqli_prepare($conn, $dept_head_sql)) {
                                 mysqli_stmt_bind_param($dept_head_stmt, "i", $user_department);
                                 mysqli_stmt_execute($dept_head_stmt);
                                 $dept_head_result = mysqli_stmt_get_result($dept_head_stmt);
-                                
+
                                 $program_heads = [];
-                                while($head_row = mysqli_fetch_assoc($dept_head_result)) {
+                                while ($head_row = mysqli_fetch_assoc($dept_head_result)) {
                                     $program_heads[] = $head_row['id'];
                                 }
-                                
-                                if(!empty($program_heads)) {
+
+                                if (!empty($program_heads)) {
                                     // Include user name in the notification
                                     $user_name = $_SESSION["username"] ?? "A user";
                                     $message = "New task request: \"" . $title . "\" submitted by " . $user_name . ".";
                                     $link = "task_approvals.php";
                                     $notificationController->sendNotification($program_heads, $message, $link);
-                                    
+
                                     // Log notification attempt
                                     error_log("Notification sent to program_head (with underscore): " . implode(',', $program_heads));
                                 } else {
@@ -190,17 +194,17 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             }
                         }
                     }
-                    
+
                     // Set success message
                     $_SESSION['success_message'] = "Task request submitted successfully.";
-                    
+
                     // Redirect to tasks page
                     header("location: tasks.php");
                     exit();
                 } else {
                     throw new Exception("Error executing statement: " . mysqli_error($conn));
                 }
-                
+
                 // Close statement
                 mysqli_stmt_close($stmt);
             } else {
@@ -226,94 +230,111 @@ include 'includes/components/sidebar.php';
 include 'includes/components/modals.php';
 ?>
 
-        <!-- Content Wrapper -->
-        <div id="content-wrapper" class="d-flex flex-column">
-            <!-- Main Content -->
-            <div id="content">
+<!-- Content Wrapper -->
+<div id="content-wrapper" class="d-flex flex-column">
+    <!-- Main Content -->
+    <div id="content">
         <?php include 'includes/components/navbar.php'; ?>
 
-                <!-- Begin Page Content -->
-                <div class="container-fluid">
-                    <!-- Page Heading -->
-                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Request New Task</h1>
-                    </div>
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800">Request New Task</h1>
+            </div>
 
-                    <!-- Content Row -->
-                    <div class="row">
+            <!-- Content Row -->
+            <div class="row">
                 <div class="col-xl-12 col-lg-12">
-                            <div class="card shadow mb-4">
+                    <div class="card shadow mb-4">
                         <!-- Card Header -->
                         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                             <h6 class="m-0 font-weight-bold text-primary">Task Details</h6>
                         </div>
                         <!-- Card Body -->
-                                <div class="card-body">
-                            <form id="taskRequestForm" method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" enctype="multipart/form-data">
+                        <div class="card-body">
+                            <form id="taskRequestForm" method="POST"
+                                action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"
+                                enctype="multipart/form-data">
                                 <input type="hidden" name="action" value="create">
                                 <input type="hidden" name="created_by" value="<?php echo $user_id; ?>">
 
                                 <?php if (isset($_SESSION['error_message'])) { ?>
-                                    <div class="alert alert-danger"><?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?></div>
+                                    <div class="alert alert-danger">
+                                        <?php echo $_SESSION['error_message'];
+                                        unset($_SESSION['error_message']); ?>
+                                    </div>
                                 <?php } ?>
 
                                 <?php if (isset($_SESSION['success_message'])) { ?>
-                                    <div class="alert alert-success"><?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?></div>
+                                    <div class="alert alert-success">
+                                        <?php echo $_SESSION['success_message'];
+                                        unset($_SESSION['success_message']); ?>
+                                    </div>
                                 <?php } ?>
 
-                                        <div class="form-group">
+                                <div class="form-group">
                                     <label for="title">Title</label>
-                                            <input type="text" name="title" class="form-control <?php echo (!empty($title_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $title; ?>">
-                                            <span class="invalid-feedback"><?php echo $title_err; ?></span>
-                                        </div>
-                                
+                                    <input type="text" name="title"
+                                        class="form-control <?php echo (!empty($title_err)) ? 'is-invalid' : ''; ?>"
+                                        value="<?php echo $title; ?>">
+                                    <span class="invalid-feedback"><?php echo $title_err; ?></span>
+                                </div>
+
                                 <div class="form-group">
                                     <label for="department">Department</label>
-                                    <input type="text" class="form-control" value="<?php 
-                                        $dept_name_sql = "SELECT name FROM departments WHERE id = ?";
-                                        if($dept_name_stmt = mysqli_prepare($conn, $dept_name_sql)){
-                                            mysqli_stmt_bind_param($dept_name_stmt, "i", $user_department);
-                                            mysqli_stmt_execute($dept_name_stmt);
-                                            $dept_name_result = mysqli_stmt_get_result($dept_name_stmt);
-                                            if($dept_name_row = mysqli_fetch_assoc($dept_name_result)){
-                                                echo htmlspecialchars($dept_name_row['name']);
-                                            }
-                                            mysqli_stmt_close($dept_name_stmt);
+                                    <input type="text" class="form-control" value="<?php
+                                    $dept_name_sql = "SELECT name FROM departments WHERE id = ?";
+                                    if ($dept_name_stmt = mysqli_prepare($conn, $dept_name_sql)) {
+                                        mysqli_stmt_bind_param($dept_name_stmt, "i", $user_department);
+                                        mysqli_stmt_execute($dept_name_stmt);
+                                        $dept_name_result = mysqli_stmt_get_result($dept_name_stmt);
+                                        if ($dept_name_row = mysqli_fetch_assoc($dept_name_result)) {
+                                            echo htmlspecialchars($dept_name_row['name']);
                                         }
+                                        mysqli_stmt_close($dept_name_stmt);
+                                    }
                                     ?>" readonly>
                                 </div>
-                                
-                                        <div class="form-group">
+
+                                <div class="form-group">
                                     <label for="category">Category</label>
-                                    <select name="category" class="form-control <?php echo (!empty($category_err)) ? 'is-invalid' : ''; ?>" id="category">
+                                    <select name="category"
+                                        class="form-control <?php echo (!empty($category_err)) ? 'is-invalid' : ''; ?>"
+                                        id="category">
                                         <option value="">Select Category</option>
                                         <option value="printing" <?php echo ($category == 'printing') ? 'selected' : ''; ?>>Printing/Risograph</option>
-                                        <option value="repairs" <?php echo ($category == 'repairs') ? 'selected' : ''; ?>>Repairs</option>
+                                        <option value="repairs" <?php echo ($category == 'repairs') ? 'selected' : ''; ?>>
+                                            Repairs</option>
                                         <option value="maintenance" <?php echo ($category == 'maintenance') ? 'selected' : ''; ?>>Maintenance</option>
                                         <option value="instructional" <?php echo ($category == 'instructional') ? 'selected' : ''; ?>>Instructional Materials</option>
                                         <option value="clerical" <?php echo ($category == 'clerical') ? 'selected' : ''; ?>>Clerical</option>
                                         <option value="inventory" <?php echo ($category == 'inventory') ? 'selected' : ''; ?>>Inventory</option>
-                                        <option value="event" <?php echo ($category == 'event') ? 'selected' : ''; ?>>Event Assistance</option>
+                                        <option value="event" <?php echo ($category == 'event') ? 'selected' : ''; ?>>
+                                            Event Assistance</option>
                                     </select>
                                     <span class="invalid-feedback"><?php echo $category_err; ?></span>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="reason">Reason</label>
-                                    <textarea name="reason" class="form-control <?php echo (!empty($reason_err)) ? 'is-invalid' : ''; ?>"><?php echo $reason; ?></textarea>
+                                    <textarea name="reason"
+                                        class="form-control <?php echo (!empty($reason_err)) ? 'is-invalid' : ''; ?>"><?php echo $reason; ?></textarea>
                                     <span class="invalid-feedback"><?php echo $reason_err; ?></span>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="due_date">Due Date</label>
-                                    <input type="date" name="due_date" class="form-control" min="<?php echo date('Y-m-d'); ?>" required>
+                                    <input type="date" name="due_date" class="form-control"
+                                        min="<?php echo date('Y-m-d'); ?>" required>
                                 </div>
 
                                 <!-- Category-specific fields will be dynamically added here -->
                                 <div id="categoryFields"></div>
 
                                 <div class="form-group">
-                                    <label for="attachment" class="form-label">Attachment <span id="attachmentRequired" style="display: none; color: red;">*</span></label>
+                                    <label for="attachment" class="form-label">Attachment <span id="attachmentRequired"
+                                            style="display: none; color: red;">*</span></label>
                                     <input type="file" class="form-control" id="attachment" name="attachment">
                                     <small class="text-muted">Maximum file size: 5MB</small>
                                     <span class="invalid-feedback"><?php echo $attachment_err; ?></span>
@@ -324,41 +345,41 @@ include 'includes/components/modals.php';
                                     <a href="tasks.php" class="btn btn-secondary">Cancel</a>
                                 </div>
                             </form>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
-                <!-- /.container-fluid -->
             </div>
-            <!-- End of Main Content -->
-
-            <!-- Footer -->
-    <?php include 'includes/components/footer.php'; ?>
         </div>
-        <!-- End of Content Wrapper -->
+        <!-- /.container-fluid -->
+    </div>
+    <!-- End of Main Content -->
+
+    <!-- Footer -->
+    <?php include 'includes/components/footer.php'; ?>
+</div>
+<!-- End of Content Wrapper -->
 
 <!-- Include Scripts -->
 <?php include 'includes/components/footer_scripts.php'; ?>
 
 <!-- Custom scripts for this page -->
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         // Handle category change
-        $('#category').change(function() {
+        $('#category').change(function () {
             var category = $(this).val();
             var fieldsHtml = '';
-            
+
             // Show/hide required indicator for attachment
-            if(category === 'printing') {
+            if (category === 'printing') {
                 $('#attachmentRequired').show();
                 $('#attachment').prop('required', true);
             } else {
                 $('#attachmentRequired').hide();
                 $('#attachment').prop('required', false);
             }
-            
-            switch(category) {
+
+            switch (category) {
                 case 'printing':
                     fieldsHtml = `
                         <div class="form-group">
@@ -472,10 +493,10 @@ include 'includes/components/modals.php';
                     `;
                     break;
             }
-            
+
             $('#categoryFields').html(fieldsHtml);
         });
-        
+
         // Trigger change event on page load if category is already selected
         if ($('#category').val()) {
             $('#category').trigger('change');
@@ -484,8 +505,9 @@ include 'includes/components/modals.php';
 </script>
 
 </body>
+
 </html>
 
 <?php
 // Connection is already closed by shutdown function
-?> 
+?>
